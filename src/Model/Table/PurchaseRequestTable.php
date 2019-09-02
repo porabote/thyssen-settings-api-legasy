@@ -123,7 +123,7 @@ class PurchaseRequestTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR',
+				'operator_logical' => 'AND',
 				'where' => ['custom_type' => '5']	
 	        ]
 	    ],
@@ -143,7 +143,7 @@ class PurchaseRequestTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'	
+				'operator_logical' => 'AND'	
 	        ] 
 	    ],
 	    'department_id' => [
@@ -161,7 +161,7 @@ class PurchaseRequestTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'	
+				'operator_logical' => 'AND'	
 	        ]
 	    ],
 	    'status_id' => [
@@ -184,7 +184,7 @@ class PurchaseRequestTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'	
+				'operator_logical' => 'AND'	
 	        ],
 	        'index' => [
 		        'width' => '220px',

@@ -15,6 +15,7 @@ class CategoryOptionsTable extends Table
        // $this->table('categoryOptions');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+        $this->belongsToMany('Categories');
 
 /*
         $this->belongsTo('Users');
@@ -60,7 +61,17 @@ class CategoryOptionsTable extends Table
             'db_params' => [
 	            'comment' => 'Название'
             ]
-	    ]
+	    ],
+	    'categories' => [
+		    'pattern' => '{% for category in categories %} {{category.name}} {% endfor %}',
+            'index' => [	            
+	            'width' => '250px',
+	            'show' => 1
+            ],
+            'db_params' => [
+	            'comment' => 'Ассоциировано с категориями:'
+            ]
+	    ]	    
     ];
 
 

@@ -80,11 +80,18 @@ class PostsTable extends Table
 				'comment' => 'ФИО физ. лица'
 			]
 	    ],
+	    'name' => [
+            'pattern' => '<span class="cell-item_title">{{name}}</span>',
+            'index' => [
+	            'width' => '250px',
+	            'show' => 1
+            ]
+	    ],
 	    'department_id' => [
 		    'leftJoin' => 'Departments',
 	        'pattern' => '{{department.name}}',
 	        'index' => [
-		        'width' => '300px',
+		        'width' => '301px',
 		        'show' => 1
             ],
 	        'filter' => [
@@ -113,14 +120,7 @@ class PostsTable extends Table
 	            'width' => '250px',
 	            'show' => 1
             ]
-	    ],
-	    'name' => [
-            'pattern' => '<span class="cell-item_title">{{name}}</span>',
-            'index' => [
-	            'width' => '250px',
-	            'show' => 0
-            ]
-	    ],
+	    ]
 
     ];  
 

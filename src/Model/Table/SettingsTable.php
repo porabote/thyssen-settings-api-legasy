@@ -110,6 +110,7 @@ class SettingsTable extends Table
                     'id' => 'checkboxPanelSelectSettings', 
                     'name' => 'checkbox_actions',
                     'label' => 'Действия с выделенным',
+                    'on-events' => '{"change":"Settings|handleIndex"}',
                     'options' => [
 	                    '/settings/deleteRecords/' => 'Удалить'
                     ],

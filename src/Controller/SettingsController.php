@@ -39,6 +39,20 @@ class SettingsController extends AppController
         $this->set(compact('records'));
     }
 
+    public function getDumpDefaultDb()
+    {
+        $connectionCreator = ConnectionManager::get('default');//debug($connectionCreator);
+        $dumpPath = TMP.'dump.sql';
+        $query = 'mysqldump -u'.DB_USER.' -p'.DB_PSW.' --skip-add-drop-table --skip-add-locks --skip-disable-keys --skip-set-charset --compact api_default > '.$dumpPath;
+        exec($query);
+        
+        $dump = htmlentities(file_get_contents($dumpPath));
+        $this->__outputJSON(['dump' => $dump]);
+        
+        $this->render(false);
+    }
+
+
     function dbTest()
     {
 	    $this->render(false);
@@ -192,7 +206,7 @@ class SettingsController extends AppController
 
 	    $settings = $this->getSettings($className);
 	    $record['settings'] = serialize($settings);
-	    if( $this->Settings->save($record) ) { 
+	    if( $this->Settings->save($record) ) { //debug(unserialize($record['settings']));
 		    echo 'Model <b>ID:'.$record['id'].' ' .$className. '</b> has been update <br>'; 
 		}	
 	    
@@ -301,7 +315,7 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 		        foreach($model->contain_map as $field => $params) {
 
 			        if(!isset($params['model']) && isset($params['leftJoin'])) {
-				        if((is_string($params['leftJoin']))) { 
+				        if((is_string($params['leftJoin']))) {
 					        $params['model'] = $params['leftJoin'];
 					        $settings['contains'][] = $params['leftJoin'];
 					    }
@@ -327,7 +341,7 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 	    } else {
 		    echo 'Класс <b>' .$model. '</b> не найден <br>';
 	    }
-	       	 //debug($settings);       
+	       //debug($settings);       
         return $settings;	    
     }
 
@@ -359,11 +373,13 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
             $columns_base = $reflectionClass->getValue($model->getSchema());
 		    
             // Пересортировываем по порядку указания в моделе
-            $resort_columns_base = []; 
+            $resort_columns_base = [];
             foreach($model->contain_map as $column_name => $params) {
 	            if(isset($columns_base[$column_name])) {
 	                $resort_columns_base[$column_name] = $columns_base[$column_name];
 	                unset($columns_base[$column_name]);
+	            } else if(isset($model->contain_map[$column_name]) && isset($model->contain_map[$column_name]['index']['show']) && $model->contain_map[$column_name]['index']['show']) {
+		            $resort_columns_base[$column_name] = $model->contain_map[$column_name];
 	            }
             }
             $columns_base = array_merge($resort_columns_base, $columns_base);
@@ -379,12 +395,12 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 		   
             $cells = [];
             foreach($columns_base as $field  => &$attrs) :
-		  
+		
 		
                 if(!empty($attrs['comment']) || isset($model->contain_map[$field]['index']['show'])) { 
                     
                     $cells[$field] = [];
-                
+               // debug($model->contain_map[$field]);
                     // Приссваиваем все свойства из модели
                     if(isset($model->contain_map[$field]) && is_array($model->contain_map[$field])) { 
 	                    $cells[$field] = $model->contain_map[$field];
@@ -398,10 +414,12 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 					        }
 					    }
 					   
-					    if(isset($cells[$field]['filter']['modelAlias'])) {
-					
+					    if(isset($cells[$field]['filter']['modelAlias']) && !isset($cells[$field]['filter']['modelName'])) {
+
 						    $cells[$field]['filter']['modelName'] = $this->mainModel->getAssociation($cells[$field]['filter']['modelAlias'])->className();
+					   
 					    }
+					    
 
 	                }
                     

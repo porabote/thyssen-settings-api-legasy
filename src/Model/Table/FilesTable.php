@@ -65,7 +65,7 @@ class FilesTable extends Table
             ]
 	    ],
 	    'uri' => [
-		    'pattern' => '<a href="/filesData/getListByParent/{{id}}">{{uri}}</a>',
+		    'pattern' => '{% if link is empty %}<a href="/filesData/getListByParent/{{id}}">{{uri}}</a>{% else %}<a href="{{uri}}{{id}}">{{uri}}</a>{% endif %}',
             'index' => [	            
 	            'width' => '300px',
 	            'show' => 1

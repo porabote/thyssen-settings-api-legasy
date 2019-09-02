@@ -22,6 +22,12 @@ class BillsTable extends Table
 
         $this->belongsTo('Statuses');
 
+        $this->belongsTo('WhoSignQueue', [
+            'foreignKey' => 'who_sign_queue_id',
+            'className' => 'Posts',
+            'propertyName' => 'who_sign_queue_id'
+        ]);
+
         $this->hasMany('PurchaseNomenclatures', [
             'foreignKey' => 'bill_id',
             'propertyName' => 'nomenclatures',
@@ -57,7 +63,7 @@ class BillsTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'
+				'operator_logical' => 'AND'
             ],
 	        'index' => [
 	            'width' => '212px',
@@ -117,32 +123,54 @@ class BillsTable extends Table
 	    	'leftJoin' => 'Objects',
 	        'pattern' => '{{object.name}}',
 	        'filter' => [
-	    	    'modelName' => 'Objects',
+	    	    'modelAlias' => 'Departments',
 	            'url' => '/departments/getFindList/',
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'
+				'operator_logical' => 'AND'
 	        ],
 	        'index' => [
 	              'width' => '150px',
 	              'show' => 1
             ]
 	    ],
-        'manager_id' => [
-	    	'leftJoin' => 'Managers',
-	        'pattern' => '{{manager.name}}',
+	    'who_sign_queue_id' => [
+		    'leftJoin' => 'WhoSignQueue',
+	        'pattern' => '<span class="post-info"><span class="post-fio">{{who_sign_queue_id.fio}}</span> <span class="post-name">{{who_sign_queue_id.name}}</span></span>',
+	        'cell-value' => '{{who_sign_queue_id.id}}',
 	        'filter' => [
-	    	    'modelName' => 'Managers',
+		        'modelName' => 'Posts',
 	            'url' => '/posts/getFindList/',
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'
+				'operator_logical' => 'AND'	
+	        ],
+	        'index' => [
+		        'width' => '220px',
+		        'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'На подписи у'
+            ]
+	    ],
+        'manager_id' => [
+	    	'leftJoin' => 'Managers',
+	        'pattern' => '{{manager.fio}} {{manager.name}}',
+	        'filter' => [
+	    	    'modelName' => 'Posts',
+	            'url' => '/posts/getFindList/',
+				'hide' => 0,
+				'default_value' => null,
+				'show' => 1,
+				'operator' => '=',
+				'output_type' => 'select',
+				'operator_logical' => 'AND'
 	        ],
 	        'index' => [
 	              'width' => '150px',

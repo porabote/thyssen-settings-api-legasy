@@ -48,6 +48,11 @@ class PurchaseNomenclaturesTable extends Table
 
         $this->hasMany('CustomTypes');
         
+        $this->belongsToMany('Purchases', [
+	        'foreignKey' => 'nomenclature_id',
+	        'joinTable' => 'nomenclatures_purchases'
+        ]);
+        
         $this->hasMany('Files', [
             'foreignKey' => 'record_id',
             'className' => 'Files',
@@ -60,33 +65,8 @@ class PurchaseNomenclaturesTable extends Table
     ];
 
     public $contain_map = [
-	    'manager_id' => [
-            'leftJoin' => 'Managers',
-            'pattern' => '<span class="post-info"><span class="post-fio">{{manager.fio}}</span> <span class="post-name">{{manager.name}}</span></span>',
-            'index' => [
-	            'width' => '211px',
-	            'show' => 1
-            ],
-	        'filter' => [
-	    	    'modelName' => 'Managers',
-	            'url' => '/posts/getFindList/',
-				'hide' => 0,
-				'default_value' => null,
-				'show' => 1,
-				'operator' => '=',
-				'output_type' => 'select',
-				'operator_logical' => 'OR'
-	        ]
-	    ],
-	    'quantity' => [
-            'pattern' => '{{quantity}} {{unit_name}}',
-            'index' => [
-	            'width' => '70px',
-	            'show' => 1
-            ]
-	    ],
-	    'request_id' => [
-            'pattern' => '<a href="/purchaseRequest/view/{{request_id}}/">{{request_id}}</a>',
+        'request_id' => [
+            'pattern' => '<u><a href="/purchaseRequest/view/{{request_id}}">{{request_id}}</a></u>',
             'index' => [
 	            'width' => '90px',
 	            'show' => 1
@@ -102,7 +82,14 @@ class PurchaseNomenclaturesTable extends Table
 	    'name' => [
             'pattern' => '<span class="cell-info"><span class="cell-item_title">{{name}}</span> <span class="cell-item_describe">{{text}}</span></span>',
             'index' => [
-	            'width' => '290px',
+	            'width' => '350px',
+	            'show' => 1
+            ]
+	    ],
+	    'quantity' => [
+            'pattern' => '{{quantity}} {{unit_name}}',
+            'index' => [
+	            'width' => '70px',
 	            'show' => 1
             ]
 	    ],
@@ -122,8 +109,26 @@ class PurchaseNomenclaturesTable extends Table
 				'show' => 1,
 				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'OR'	            
+				'operator_logical' => 'AND'	            
 	        ],
+	    ],
+	    'manager_id' => [
+            'leftJoin' => 'Managers',
+            'pattern' => '<span class="post-info"><span class="post-fio">{{manager.fio}}</span> <span class="post-name">{{manager.name}}</span></span>',
+            'index' => [
+	            'width' => '211px',
+	            'show' => 1
+            ],
+	        'filter' => [
+	    	    'modelAlias' => 'Managers',
+	            'url' => '/posts/getFindList/',
+				'hide' => 0,
+				'default_value' => null,
+				'show' => 1,
+				'operator' => '=',
+				'output_type' => 'select',
+				'operator_logical' => 'AND'
+	        ]
 	    ],
 	    'text' => [
             'index' => [
@@ -136,14 +141,15 @@ class PurchaseNomenclaturesTable extends Table
             ]
 	    ],
 	    'bill_id' => [
-            'pattern' => '<a href="/store/bills/view/{{bill_id}}/">{{bill.number}}</a>',
+		    'leftJoin' => 'Bills',
+            'pattern' => '<u><a href="/store/bills/view/{{bill_id}}/">{{bill.number}}</a></u>',
             'index' => [
 	            'width' => '65px',
 	            'show' => 1
             ]
 	    ],
 	    'purchase_id' => [
-            'pattern' => '<a href="/purchases/view/{{purchase_id}}/">{{purchase_id}}</a>',
+            'pattern' => '<u><a href="/purchases/view/{{purchase_id}}/">{{purchase_id}}</a></u>',
             'index' => [
 	            'width' => '45px',
 	            'show' => 1
@@ -226,6 +232,46 @@ class PurchaseNomenclaturesTable extends Table
             'index' => [
 	            'show' => 0
             ]
+	    ],
+	    'unit_quantity' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'date_to' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'kind' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'name_analog' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'barcode' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'article' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'flag' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'transport_company_id' => [
+            'index' => [
+	            'show' => 0
+            ]
 	    ]
     ];
 
@@ -241,20 +287,15 @@ class PurchaseNomenclaturesTable extends Table
 	    'checkbox_panel' => [
 		    'selects' => [ 
 		        [			    
-                    'id' => 'checkboxPanelSelectPN', 
+                    'id' => 'checkboxPanelSelectPN',
                     'name' => 'parent_id',
+                    'data-params' => '{"readonly":true}',
+                    'on-events' => '{"change":"PurchaseNomenclatures|handleIndex"}',
                     'label' => 'Действия с выделенным',
                     'options' => [
 	                    '/purchaseNomenclatures/setPurchaseParams/' => 'Указать данные поставки'
                     ],
-                    'data-params' => '{ 
-	                    "model" : "Settings"
-                    }',
-                    'data-action' => '{ 
-	                    "action" : "Settings.indexHandle"
-                    }',
-                    'class' => 'on-select__finder',
-                    'wrap_class' => 'grid',
+                    'class' => 'on-select__finder list-listener',
                     'escape' => false,
                     'empty' => 'Не выбрано',
                     'type' => 'select'

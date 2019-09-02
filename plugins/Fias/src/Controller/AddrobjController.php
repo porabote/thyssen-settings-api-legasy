@@ -72,6 +72,9 @@ class AddrobjController extends AppController
     function getParentBranch($name = 'москва')
     {
 	    $this->render(false);
+	    parse_str($this->request->getData('data'), $data);
+	    if(isset($data['searshString'])) $name = $data['searshString'];
+
         $connectionCreator = ConnectionManager::get('api_fias'); 
 	    
 	    $query = '
@@ -84,7 +87,7 @@ class AddrobjController extends AppController
                          POSTALCODE,
                          id
               from       regions_cities
-              where      FORMALNAME = \''.$name.'\'
+              where      FORMALNAME = \'санкт%\'
               union all
               select     rc.AOGUID,
                          rc.OFFNAME,
@@ -102,13 +105,17 @@ class AddrobjController extends AppController
 	    
 	    $result = $connectionCreator->query($query)->fetchAll('assoc');
 	    //$result = array_reverse($result);
-	    debug($result);
+	    //debug($result);
 	    $address = '';
-	    
-	    if($result) $recordBefore = $result[0];$recordBefore['AOGUID'] = $recordBefore['PARENTGUID'];//debug($result);
+	  // debug($result); 
+	    if(isset($result[0])) { 
+		    $recordBefore = $result[0];
+		    $recordBefore['AOGUID'] = $recordBefore['PARENTGUID'];//debug($result);
+		}
+		    
 	    foreach($result as $key => $part) {
 
-            $break = ($part['PARENTGUID'] == $recordBefore['AOGUID']) ? ' ' : '<br>';
+            $break = ($part['PARENTGUID'] == $recordBefore['AOGUID']) ? '' : '|';
 
 		    $address .=  $break . $part['SHORTNAME'] . ' ' . $part['OFFNAME'] . 
 		        (($part['PARENTGUID'] == $recordBefore['AOGUID'] || $break) ? ', ' : '' );   
@@ -116,7 +123,10 @@ class AddrobjController extends AppController
 		    
 		    $recordBefore = $part;
 	    }
-	    echo $address;
+	    if($address) {
+		    $address = explode('|', $address);
+		    $this->__outputJSON(['Addresses' => $address]); 
+	    }
 	    
     }
 
