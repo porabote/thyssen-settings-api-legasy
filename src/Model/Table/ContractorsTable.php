@@ -79,7 +79,68 @@ class ContractorsTable extends Table
 
 
 
-    public $contain_map = [];
+    public $contain_map = [
+	    'id' => [
+	        'pattern' => '{{id}}',
+	        'index' => [
+		        'width' => '70px',
+		        'show' => 1
+	        ],
+            'db_params' => [
+              'comment' => '<span>Номер<br><sup class="grid_list__item sup">ID</sup></span>'
+            ]
+	    ],
+	    'inn' => [
+		    'pattern' => '{{inn}}',
+	        'index' => [
+		        'width' => '120px',
+		        'show' => 1
+	        ],
+            'db_params' => [
+              'comment' => '<span>ИНН</span>'
+            ]
+	    ],
+	    'name' => [
+            'pattern' => '{% if model == "Companies" %} <a href="/companies/view/{{record_id}}/">{{name}}</a>
+                          {% elseif model == "Peoples" %} <a href="/peoples/view/{{record_id}}/">{{name}}</a>
+                          {% elseif model == "Entrepreneurs" %} <a href="/entrepreneurs/view/{{record_id}}/">{{name}}</a>
+                          {% endif %}',
+	        'index' => [
+		        'width' => '350px',
+		        'show' => 1
+	        ],
+            'db_params' => [
+              'comment' => 'Название'
+            ]
+	    ],
+	    'model' => [
+            'pattern' => '{% if model == "Companies" %} Компания ({{record_id}})
+                          {% elseif model == "Peoples" %}Физ. лицо ({{record_id}}) 
+                          {% else %} ИП ({{record_id}})
+                          {% endif %}',
+            'index' => [
+	            'width' => '150px',
+	            'show' => 1
+            ],
+            'db_params' => [
+              'comment' => 'Тип'
+            ]
+	    ],
+	    'type' => [
+            'pattern' => '{% if type == "client" %} Внешний
+                          {% elseif type == "distributor" %} Поставщик
+                          {% elseif type == "distributor" %} Поставщик
+                          {% elseif type == "transport_company" %} Транспортная компания
+                          {% endif %}',
+            'index' => [
+	            'width' => '120px',
+	            'show' => 1
+            ],
+            'db_params' => [
+              'comment' => 'Вид контрагента'
+            ]
+	    ]
+    ];
 
 
 	public $links = [

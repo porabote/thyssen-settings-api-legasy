@@ -83,6 +83,15 @@ class DocumentationsTable extends Table
 	            'comment' => 'Наименование документа'
             ]
 	    ],
+	    'comment' => [
+            'index' => [
+	            'width' => '200px',
+	            'show' => 0
+            ],
+            'db_params' => [
+	            'comment' => 'Комментарий'
+            ]
+	    ],
 	    'number' => [
             'pattern' => '{{number}}',
             'index' => [

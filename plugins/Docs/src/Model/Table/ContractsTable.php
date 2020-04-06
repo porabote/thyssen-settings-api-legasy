@@ -44,42 +44,62 @@ class ContractsTable extends Table
             'index' => [
 	            'width' => '65px',
 	            'show' => 1
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'ID'
+	        ]
 	    ],
-	    'user_id' => [
-            'leftJoin' => 'Users',
-            'pattern' => '<span class="post-info"> <span class="post-name">{{user.full_name}}</span></span>',
+	    'number' => [
+		    'pattern' => '<span class="cell-info">№ <span class="cell-item_bold">{{number}}</span></span>',
             'index' => [
-	            'width' => '200px',
+	            'width' => '140px',
 	            'show' => 1
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'Номер'
+	        ]
 	    ],
-	    'city_id' => [
-            'leftJoin' => 'Cities',
-            'pattern' => '<span class="post-info"> <span class="post-name">{{city.name}}</span></span>',
+	    'name' => [
+            'pattern' => '<span class="cell-info">{{name}}<span class="cell-item_describe">{{text}}</span></span>',
             'index' => [
-	            'width' => '200px',
+	            'width' => '340px',
 	            'show' => 1
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'Название'
+	        ]
+	    ],
+	    'contractors' => [
+            'leftJoin' => 'Contractors',
+            'pattern' => '
+            <span class="cell-info">            
+                {% for key,contragent in contractors %} 
+                    <span class="cell-item_describe">{{contragent._joinData.role_name}}</span>
+                    <span class="cell-item_title">{{contragent.name}}</span>
+                {% endfor %}
+            </span>',
+            'index' => [
+	            'width' => '220px',
+	            'show' => 1
+            ],
+	        'db_params' => [
+		        'comment' => 'Стороны'
+	        ]
 	    ],
 	    'summa' => [
-		    'pattern' => '<span>{{summa}}</span>',
+		    'pattern' => '<span>{% if summa is not null %} {{ summa|number_format }} &#8381; {% endif %}</span>',
             'index' => [
 	            'width' => '120px',
 	            'show' => 1
-            ]
-	    ],
-	    'name' => [
-            'pattern' => '<span class="cell-info"><span class="cell-item_title">{{name}}</span> <span class="cell-item_describe">{{text}}</span></span>',
-            'index' => [
-	            'width' => '290px',
-	            'show' => 1
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'Сумма'
+	        ]
 	    ],
 	    'date_during' => [
             'pattern' => '{{date_from}} / {{date_to}}',
             'index' => [
-	            'width' => '100px',
+	            'width' => '140px',
 	            'show' => 1
             ],
 	        'filter' => [
@@ -97,9 +117,26 @@ class ContractsTable extends Table
 	        ]
 	    ],
 	    'user_id' => [
+            'leftJoin' => 'Users',
+            'pattern' => '<span class="post-info"> <span class="post-name">{{user.full_name}}</span></span>',
             'index' => [
+	            'width' => '200px',
 	            'show' => 0
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'Добавил'
+	        ]
+	    ],
+	    'city_id' => [
+            'leftJoin' => 'Cities',
+            'pattern' => '<span class="post-info"> <span class="post-name">{{city.name}}</span></span>',
+            'index' => [
+	            'width' => '200px',
+	            'show' => 1
+            ],
+	        'db_params' => [
+		        'comment' => 'Город'
+	        ]
 	    ],
 	    'pattern_id' => [
             'index' => [
@@ -109,7 +146,10 @@ class ContractsTable extends Table
 	    'date_created_format' => [
             'index' => [
 	            'show' => 1
-            ]
+            ],
+	        'db_params' => [
+		        'comment' => 'Добавлено'
+	        ]
 	    ],
 	    'cache_html' => [
             'index' => [

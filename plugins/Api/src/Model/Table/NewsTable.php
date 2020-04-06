@@ -145,38 +145,41 @@ class NewsTable extends Table
 
 
 
-	public $links = [
-		'contain' => [],
-		'table' => [
-		    'name' => [
-		        'link' => '/api/news/view/',
-		        'param' => [ 'id' ],
-		        'attr' => [ 
-		            'class' => 'table__link', 
-		            'escape' => false 
-		        ]
-		    ] 	    
-		],
-		'submenu' => [ 
-		    'Корректировка <span class="lnr lnr-pencil"></span>' => [
-		        'link' => '/api/news/view/',
-		        'param' => [ 'id' ],
-		        'attr' => [ 
-		            'class' => 'hide-blok__link', 
-		            'escape' => false 
-		        ]
-		    ],
-		    'Удалить <span class="lnr lnr-trash">' => [
-		        'link' => '/api/settings/markDeletedApi/Api.News/',
-		        'param' => [ 'id' ],
-		        'attr' => [ 
-		            'class' => 'hide-blok__link sidebar-open', 
-		            'escape' => false,
-		            'data-sidebar' => "{ 'post_data' : { 'message' : 'Уверены что хотите удалить страницу?' } }"
-		        ]
-		    ] 		         	    
-		]
-	];
+
+    public $links = [
+        'drop_panel' => [
+            [
+                'title' => 'Просмотр',
+                'href' => '/api/news/view/{{record.id}}/',
+                'class' => 'drop-button__hide-blok__link',
+                'check' => false
+            ]
+        ],
+        'checkbox_panel' => [
+            'selects' => [
+                [
+                    'id' => 'checkboxPanelSelectPN',
+                    'name' => 'select_share',
+                    'label' => 'Действия с выделенным',
+                    'options' => [
+                        '/api/news/markDeletedApi/Api.News/' => 'Удалить отмеченное'
+                    ],
+                    'data-params' => '{ 
+	                    "model" : "Api_News"
+                    }',
+                    'data-action' => '{ 
+	                    "action" : "Api_News.indexHandle"
+                    }',
+                    'class' => 'on-select__finder',
+                    'wrap_class' => 'grid',
+                    'escape' => false,
+                    'empty' => 'Не выбрано',
+                    'type' => 'select'
+                ]
+            ]
+
+        ]
+    ];
 
 
 

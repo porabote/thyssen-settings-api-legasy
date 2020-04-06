@@ -87,6 +87,16 @@ class SettingsController extends AppController
         $this->set( compact('plugin_list') );
     }
 
+    function getList()
+    {
+        $list = $this->Settings->find('list', [
+            'keyField' => 'className',
+            'valueField' => 'title'
+        ])
+        ->order(['Settings.title' => 'ASC']);
+
+        $this->__outputJSON(['list' => $list]);
+    }
 
     public function view($className)
     {
@@ -378,7 +388,11 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 	            if(isset($columns_base[$column_name])) {
 	                $resort_columns_base[$column_name] = $columns_base[$column_name];
 	                unset($columns_base[$column_name]);
-	            } else if(isset($model->contain_map[$column_name]) && isset($model->contain_map[$column_name]['index']['show']) && $model->contain_map[$column_name]['index']['show']) {
+	            } else if(
+	                isset($model->contain_map[$column_name]) && 
+	                isset($model->contain_map[$column_name]['index']['show'])
+	            ) 
+	            {
 		            $resort_columns_base[$column_name] = $model->contain_map[$column_name];
 	            }
             }
@@ -397,7 +411,7 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
             foreach($columns_base as $field  => &$attrs) :
 		
 		
-                if(!empty($attrs['comment']) || isset($model->contain_map[$field]['index']['show'])) { 
+                if(!empty($attrs['comment']) || isset($model->contain_map[$field]['index']['show']) || isset($model->contain_map[$field]['filter']['show'])) { 
                     
                     $cells[$field] = [];
                // debug($model->contain_map[$field]);

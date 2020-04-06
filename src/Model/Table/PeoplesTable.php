@@ -42,9 +42,9 @@ class PeoplesTable extends Table
 
         $this->hasMany('Posts');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'userdata_id',
-            'joinType' => 'LEFT'
+        $this->hasOne('Users', [
+           // 'foreignKey' => 'userdata_id',
+           // 'joinType' => 'LEFT'
         ]);
     }
 
@@ -77,40 +77,100 @@ class PeoplesTable extends Table
 
 
     public $contain_map = [
-	    'user_id' => [ 'model' => 'Users', 'alias' => 'user', 'propertyName' => 'full_name', 'assoc_type' =>  'belongsTo' ]
+	    'id' => [
+            'pattern' => '{{id}}',
+            'index' => [
+	            'width' => '65px',
+	            'show' => 1
+            ]
+	    ],
+	    'name' => [
+            'pattern' => '{{last_name}} {{name}} {{middle_name}}',
+            'index' => [
+	            'width' => '365px',
+	            'show' => 1
+            ]
+	    ],
+	    'last_name' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'middle_name' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'serie' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],
+	    'number' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],	
+	    'adress' => [
+            'index' => [
+	            'show' => 0
+            ]
+	    ],		    	        
+	    'user_id' => [
+            'leftJoin' => 'Users',
+            'pattern' => '<span class="post-info"><span class="post-fio">{{user.full_name}}</span></span>',
+            'index' => [
+	            'width' => '211px',
+	            'show' => 1
+            ],
+	        'filter' => [
+	    	    'modelAlias' => 'Users',
+	            'url' => '/users/getAjaxList/',
+	            'uri' => '{
+		            where : {OR : [{"name LIKE" : "%{{value}}%"}, {"last_name LIKE" : "%{{value}}%"}]},
+		            pattern : "{{last_name}} {{name}}" 
+	            }',
+				'hide' => 0,
+				'default_value' => null,
+				'show' => 1,
+				'operator' => '=',
+				'output_type' => 'select',
+				'operator_logical' => 'AND'
+	        ],
+	        'db_params' => [
+              'comment' => 'Прикреплено к пользователю'
+            ]
+	    ]
     ];
 
 
 	public $links = [
-	    'contain' => [],
-	    'table' => [
-	        'full_name' => [
-	         'link' => '/peoples/view/',
-	         'param' => [ 'id' ],
-	         'attr' => [ 
-	             'class' => 'table__link', 
-	             'escape' => false 
-	         ]
-	        ] 	    
+	    'drop_panel' => [
+		    [
+			    'title' => 'Просмотр',
+			    'href' => '/peoples/view/{{record.id}}/',
+			    'class' => 'drop-button__hide-blok__link',
+			    'check' => false
+		    ]		    
 	    ],
-	    'submenu' => [ 
-	        'Корректировка <span class="hide-blok__link__icon edit"></span>' => [
-	            'link' => '/peoples/edit/',
-	            'param' => [ 'id' ],
-	            'attr' => [ 
-	                'class' => 'hide-blok__link', 
-	                'escape' => false 
-	            ]
-	        ],		        
-		    'Удалить <span class="hide-blok__link__icon trash">' => [
-			    'link' => '/basemaps/deleteRecord/Peoples/',
-			    'param' => [ 'id' ],
-			    'attr' => [ 
-			        'class' => 'hide-blok__link sidebar-open', 
-			        'escape' => false,
-			        'data-sidebar' => "{ 'post_data' : { 'message' : 'Удалить данные физиского лица?' } }"
-			    ]
-		    ]		         	    
+	    'checkbox_panel' => [
+		    'selects' => [ 
+		        [			    
+                    'id' => 'checkboxPanelSelectPeoples',
+                    'name' => 'parent_id',
+                    'data-params' => '{"readonly":true}',
+                    'on-events' => '{"change":"Peoples|handleIndex"}',
+                    'label' => 'Действия с выделенным',
+                    'options' => [
+	                    '/peoples/setFlag/?className=Peoples&flag=delete' => 'Скрыть/Пометить к удалению'
+                    ],
+                    'class' => 'on-select__finder list-listener',
+                    'escape' => false,
+                    'empty' => 'Не выбрано',
+                    'type' => 'select'
+		        ]
+		    ]
+		    
 	    ]
 	];
 

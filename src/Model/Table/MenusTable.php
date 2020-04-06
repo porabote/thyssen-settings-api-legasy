@@ -6,10 +6,10 @@ use Cake\Validation\Validator;
  
 class MenusTable extends Table 
 { 
-    public static function defaultConnectionName()
-    {
-        return 'api';
-    }
+//    public static function defaultConnectionName()
+//    {
+//        return 'api';
+//    }
 
     public function initialize(array $config)
     {

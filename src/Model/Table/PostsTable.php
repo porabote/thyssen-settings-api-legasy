@@ -69,6 +69,15 @@ class PostsTable extends Table
     ];
 
     public $contain_map = [
+        'id' => [
+            'index' => [
+	            'width' => '60px',
+	            'show' => 1
+            ],
+            'db_params' => [
+				'comment' => 'ID'
+			]
+	    ],
         'people_id' => [
 	        'leftJoin' => 'Peoples',
             'pattern' => '<span class="cell-item_title"> {{people.last_name}} {{people.name}} {{people.middle_name}} </span>',
@@ -85,6 +94,13 @@ class PostsTable extends Table
             'index' => [
 	            'width' => '250px',
 	            'show' => 1
+            ]
+	    ],
+	    'fio' => [
+            'pattern' => '<span class="cell-item_title">{{fio}}</span>',
+            'index' => [
+	            'width' => '250px',
+	            'show' => 0
             ]
 	    ],
 	    'department_id' => [

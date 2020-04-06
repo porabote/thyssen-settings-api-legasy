@@ -57,10 +57,43 @@ class PurchasesTable extends Table
     ];
 
     public $contain_map = [
-      'id' => [
-            'pattern' => '{{id}}',
+	    'id' => [
+	        'pattern' => '<a href="/purchaseRequest/view/{{id}}/">{{id}}</a>',
+	        'index' => [
+		        'width' => '70px',
+		        'show' => 1
+	        ]
+	    ],
+	    'post_id' => [
+		    'leftJoin' => 'Posts',
+	        'pattern' => '<span class="post-info"><span class="post-fio">{{post.fio}}</span> <span class="post-name">{{post.name}}</span></span>',
+	        'cell-value' => '{{post.id}}',
+	        'filter' => [
+		        'modelName' => 'Posts',
+	            'url' => '/posts/getFindList/',
+				'hide' => 0,
+				'default_value' => null,
+				'show' => 0,
+				'operator' => '=',
+				'output_type' => 'select',
+				'operator_logical' => 'AND'	
+	        ],
+	        'index' => [
+		        'width' => '220px',
+		        'show' => 1
+            ]
+	    ],
+	    'comment' => [
+            'pattern' => '{{comment}}',
             'index' => [
-	            'width' => '65px',
+	            'width' => '300px',
+	            'show' => 1
+            ]
+	    ],	    
+	    'date_created' => [
+            'pattern' => '{{date_created}}',
+            'index' => [
+	            'width' => '200px',
 	            'show' => 1
             ]
 	    ],
@@ -69,7 +102,7 @@ class PurchasesTable extends Table
 	            'show' => 0
             ]
 	    ],
-      'order_id' => [
+        'order_id' => [
             'index' => [
 	            'show' => 0
             ]
@@ -89,61 +122,42 @@ class PurchasesTable extends Table
 	            'show' => 0
             ]
 	    ],
-	    'date_created' => [
-            'pattern' => '{{date_created}}',
-            'index' => [
-	            'width' => '200px',
-	            'show' => 1
-            ]
-	    ],
-	    'post_id' => [
-            'index' => [
-	            'show' => 0
-            ]
-	    ],
 	    'store_id' => [
             'index' => [
 	            'show' => 0
-            ]
-	    ],
-	    'comment' => [
-            'pattern' => '{{comment}}',
-            'index' => [
-	            'width' => '300px',
-	            'show' => 1
             ]
 	    ]
     ];
 
 
 	public $links = [
-	    'table' => [ 
-		    'main' => [
-			        'link' => '/purchases/view/',
-			        'param' => [ 'id' ],
-			        'attr' => [  
-			            'escape' => false 
-			        ]
-		        ]  	    
+	    'drop_panel' => [
+		    [
+			    'title' => 'Просмотр',
+			    'href' => '/purchaseRequest/view/{{record.id}}/',
+			    'class' => 'drop-button__hide-blok__link',
+			    'check' => false
+		    ]		    
 	    ],
-	    'submenu' => [ 
-	        'Корректировка <span class="hide-blok__link__icon edit"></span>' => [
-	            'link' => '/purchases/view/',
-	            'param' => [ 'id' ],
-	            'attr' => [ 
-	                'class' => 'hide-blok__link', 
-	                'escape' => false 
-	            ]
-	        ],		        
-		    'Удалить <span class="hide-blok__link__icon trash">' => [
-			    'link' => '/basemaps/deleteRecord/purchases/',
-			    'param' => [ 'id' ],
-			    'attr' => [ 
-			        'class' => 'hide-blok__link sidebar-open', 
-			        'escape' => false,
-			        'data-sidebar' => "{ 'post_data' : { 'message' : 'Удалить закупку?' } }"
-			    ]
-		    ]		         	    
+	    'checkbox_panel' => [
+		    'selects' => [ 
+		        [			    
+                    'id' => 'checkboxPanelSelectPurchase',
+                    'name' => 'checkboxList',
+                    'data-params' => '{"readonly":true}',
+                    'label' => 'Действие с выделенным',
+                    'readonly' => 'readonly',
+                    'data-params' => '{ "afterSelect" : "App|handleChecked"}',
+                    'options' => [
+	                    '/purchases/setFlag/delete/' => 'Отменить выделенное'
+                    ],
+                    'class' => 'on-select__finder list-listener',
+                    'escape' => false,
+                    'empty' => 'Не выбрано',
+                    'type' => 'select'
+		        ]
+		    ]
+		    
 	    ]
 	];
 

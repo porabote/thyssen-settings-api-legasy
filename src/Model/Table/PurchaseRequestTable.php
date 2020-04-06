@@ -117,14 +117,12 @@ class PurchaseRequestTable extends Table
             ],
 	        'filter' => [
 		        'modelName' => 'Departments',
-	            'url' => '/departments/getFindList/',
+	            'url' => '/departments/getAjaxList/',
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
-				'operator' => '=',
 				'output_type' => 'select',
-				'operator_logical' => 'AND',
-				'where' => ['custom_type' => '5']	
+				'uri' => ['custom_type' => '5']	
 	        ]
 	    ],
 	    'initator_id' => [

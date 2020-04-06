@@ -93,6 +93,16 @@ class PurchaseNomenclaturesTable extends Table
 	            'show' => 1
             ]
 	    ],
+        'date_purchase' => [
+            'pattern' => '{% if date_purchase %}{{date_purchase}}{% endif %}',
+            'index' => [
+                'width' => '140px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Дата поставки'
+            ]
+        ],
 	    'status_id' => [
 	        'leftJoin' => 'Statuses',
             'pattern' => '{{status.name}}',
@@ -121,7 +131,11 @@ class PurchaseNomenclaturesTable extends Table
             ],
 	        'filter' => [
 	    	    'modelAlias' => 'Managers',
-	            'url' => '/posts/getFindList/',
+	            'url' => '/posts/getAjaxList/',
+	            'uri' => '{
+		            where : {OR : [{"name LIKE" : "%{{value}}%"}, {"fio LIKE" : "%{{value}}%"}]},
+		            pattern : "{{fio}} - {{name}}" 
+	            }',
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
@@ -178,7 +192,7 @@ class PurchaseNomenclaturesTable extends Table
 	    ],
 	    'transport_company_address_id' => [
 	        'leftJoin' => ['Addresses' => ['Contractors']],
-            'pattern' => '<span class="cell-info"><span class="cell-item_title">{{address.contractor.name}}</span> <span class="cell-item_describe">{{address.city}}</span></span>',
+            'pattern' => '<span class="cell-info"><span class="cell-item_title">{{address.contractor.name1}}<span class="cell-item_describe">{{address.full_address}}</span> </span></span> {{purchase_type}}',
             'index' => [
 	            'width' => '170px',
 	            'show' => 1
@@ -198,6 +212,17 @@ class PurchaseNomenclaturesTable extends Table
 	            'show' => 1
             ]
 	    ],
+        'date_to' => [
+            'pattern' => '{% if date_to %}{{date_to}}{% endif %}',
+            'index' => [
+                'width' => '180px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Дата поставки (инициатор)'
+            ]
+        ],
+
 	    'brand_id' => [
             'index' => [
 	            'show' => 0
@@ -234,11 +259,6 @@ class PurchaseNomenclaturesTable extends Table
             ]
 	    ],
 	    'unit_quantity' => [
-            'index' => [
-	            'show' => 0
-            ]
-	    ],
-	    'date_to' => [
             'index' => [
 	            'show' => 0
             ]

@@ -68,19 +68,34 @@ class BillsTable extends Table
 	        'index' => [
 	            'width' => '212px',
 	            'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Поставщик'
             ]
 	    ],
 	    'number' => [
-            'pattern' => '{{number}}',
+            'pattern' => '<b>{{number}}</b><br> от {{date}}',
+            'cell-value' => '{{id}}',
             'index' => [
-	            'width' => '124px',
+	            'width' => '180px',
 	            'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Номер/Дата'
             ]
 	    ],
 	    'date' => [
             'pattern' => '{{date}}',
             'index' => [
 	            'width' => '120px',
+	            'show' => 0
+            ]
+	    ],
+	    'status_id' => [
+		    'leftJoin' => 'Statuses',
+	        'pattern' => '{{status.name}}',
+	        'index' => [
+	            'width' => '150px',
 	            'show' => 1
             ]
 	    ],
@@ -124,7 +139,11 @@ class BillsTable extends Table
 	        'pattern' => '{{object.name}}',
 	        'filter' => [
 	    	    'modelAlias' => 'Departments',
-	            'url' => '/departments/getFindList/',
+	            'url' => '/departments/getAjaxList/',
+	            'uri' => '{
+		            "where" : {"custom_type" : "5"}
+	            }',
+	            'readonly' => 'readonly',
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
@@ -161,7 +180,7 @@ class BillsTable extends Table
 	    ],
         'manager_id' => [
 	    	'leftJoin' => 'Managers',
-	        'pattern' => '{{manager.fio}} {{manager.name}}',
+	        'pattern' => '{{manager.fio}}',
 	        'filter' => [
 	    	    'modelName' => 'Posts',
 	            'url' => '/posts/getFindList/',
@@ -176,27 +195,6 @@ class BillsTable extends Table
 	              'width' => '150px',
 	              'show' => 1
             ] 
-	    ],
-	    'status_id' => [
-		    'leftJoin' => 'Statuses',
-	        'pattern' => '{{status.name}}',
-/*
-	        'filter' => [
-		        'modelName' => 'Statuses',
-	            'url' => '/statuses/getFindList/',
-	            'where' => [ 'model_alias' => 'Store.Bills' ],
-				'hide' => 0,
-				'default_value' => null,
-				'show' => 1,
-				'operator' => '=',
-				'output_type' => 'select',
-				'operator_logical' => 'OR'	            
-	        ],
-*/
-	        'index' => [
-	            'width' => '150px',
-	            'show' => 1
-            ]
 	    ],
         'id' => [
 		    'index' => [
@@ -225,17 +223,18 @@ class BillsTable extends Table
 	    'name' => [
 		    'index' => [
                 'show' => 0
-		    ]
+		    ],
+            'db_params' => [
+                'comment' => 'Название'
+            ]
 	    ],
 	    'alias' => [
 		    'index' => [
                 'show' => 0
-		    ]
-	    ],
-	    'client_id' => [
-		    'index' => [
-                'show' => 0
-		    ]
+		    ],
+            'db_params' => [
+                'comment' => 'Алиас на латинице'
+            ]
 	    ],
 	    'purchase_id' => [
 		    'index' => [
