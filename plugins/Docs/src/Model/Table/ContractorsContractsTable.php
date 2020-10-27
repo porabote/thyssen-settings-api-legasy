@@ -12,6 +12,8 @@ class ContractorsContractsTable extends Table
         parent::initialize($config);
     }
 
-
+    public $contain_map = [];
+    public $links = [];
+    
 }
 

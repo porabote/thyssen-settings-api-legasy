@@ -17,6 +17,8 @@ class RegionsCitiesTable extends Table
         
     }
 
+    public $contain_map = [];
+    public $links = [];
 
 } 
 ?>

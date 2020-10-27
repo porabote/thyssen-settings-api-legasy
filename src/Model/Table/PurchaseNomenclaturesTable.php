@@ -106,14 +106,10 @@ class PurchaseNomenclaturesTable extends Table
 	    'status_id' => [
 	        'leftJoin' => 'Statuses',
             'pattern' => '{{status.name}}',
-            'index' => [
-	            'width' => '160px',
-	            'show' => 1
-            ],
 	        'filter' => [
 		        'modelName' => 'Statuses',
-	            'url' => '/statuses/getFindList/',
-	            'where' => [ 'model_alias' => 'App.PurchaseNomenclatures' ],
+	            'url' => '/statuses/getAjaxList/',
+                'uri' => ['model_alias' => 'App.PurchaseNomenclatures'],
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
@@ -121,6 +117,10 @@ class PurchaseNomenclaturesTable extends Table
 				'output_type' => 'select',
 				'operator_logical' => 'AND'	            
 	        ],
+            'index' => [
+                'width' => '160px',
+                'show' => 1
+            ]
 	    ],
 	    'manager_id' => [
             'leftJoin' => 'Managers',

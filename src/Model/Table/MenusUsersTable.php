@@ -17,4 +17,7 @@ class MenusUsersTable extends Table
     {
         $this->setTable('menus_users');
     }
+
+    public $contain_map = [];
+    public $links = [];
 }

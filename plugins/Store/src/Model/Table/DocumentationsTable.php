@@ -47,7 +47,7 @@ class DocumentationsTable extends Table
     public $contain_map = [
         'id' => [
 		    'index' => [
-			    'width' => '40px',
+			    'width' => '80px',
                 'show' => 1
 		    ]
 	    ],
@@ -110,7 +110,7 @@ class DocumentationsTable extends Table
 	            'url' => '/statuses/getFindList/',
 				'hide' => 0,
 				'default_value' => null,
-				'show' => 1,
+				'show' => 0,
 				'operator' => '=',
 				'output_type' => 'select',
 				'operator_logical' => 'OR'
@@ -133,26 +133,26 @@ class DocumentationsTable extends Table
 	            'comment' => 'Оригинал'
             ]
 	    ],	    
-	    'date_from' => [
-            'pattern' => '{{date_from}}',
-            'index' => [
-	            'width' => '120px',
-	            'show' => 1
-            ],
-            'db_params' => [
-	            'comment' => 'Начало действия'
-            ]
-	    ],
-	    'date_to' => [
-            'pattern' => '{{date_to}}',
-            'index' => [
-	            'width' => '150px',
-	            'show' => 1
-            ],
-            'db_params' => [
-	            'comment' => 'Дата истечения'
-            ]
-	    ],
+//	    'date_from' => [
+//            'pattern' => '{{date_from}}',
+//            'index' => [
+//	            'width' => '120px',
+//	            'show' => 1
+//            ],
+//            'db_params' => [
+//	            'comment' => 'Начало действия'
+//            ]
+//	    ],
+//	    'date_to' => [
+//            'pattern' => '{{date_to}}',
+//            'index' => [
+//	            'width' => '150px',
+//	            'show' => 1
+//            ],
+//            'db_params' => [
+//	            'comment' => 'Дата истечения'
+//            ]
+//	    ],
         'post_id' => [
 	    	'leftJoin' => 'Posts',
 	        'pattern' => '{{post.fio}}',

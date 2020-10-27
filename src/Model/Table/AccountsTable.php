@@ -12,12 +12,12 @@ class AccountsTable extends Table
 
     public static function defaultConnectionName()
     {
-        return 'systems';
+        return 'api_accounts';
     }
 
     public function initialize(array $config)
     {
-        $this->setTable('systems.accounts');
+        $this->setTable('api_accounts.accounts');
         
         $this->addBehavior('Timestamp', [
             'events' => [
@@ -30,8 +30,8 @@ class AccountsTable extends Table
             ]
         ]);
         
-        $this->belongsToMany('Shared.Plugins', [
-	        'joinTable' => 'systems.accounts_plugins'
+        $this->belongsToMany('Plugins', [
+	        'joinTable' => 'api_accounts.accounts_plugins'
         ]);
     }
 
@@ -83,7 +83,8 @@ class AccountsTable extends Table
                 
     ];
 
-
+    public $contain_map = [];
+    public $links = [];
 
     public function beforeSave(\Cake\Event\Event $event, \Cake\ORM\Entity $entity, 
         \ArrayObject $options)

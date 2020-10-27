@@ -206,3 +206,4 @@ Plugin::load('Api', ['autoload' => true, 'bootstrap' => false, 'routes' => true]
 Plugin::load('Fias', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Acl', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Store', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
+Plugin::load('Dictionaries', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);

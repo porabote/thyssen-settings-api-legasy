@@ -19,5 +19,8 @@ class BnkseekTable extends Table
         $this->setPrimaryKey('BIC');
         
     }
-    
+
+    public $contain_map = [];
+    public $links = [];
+
 }

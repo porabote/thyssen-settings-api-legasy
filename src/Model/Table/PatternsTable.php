@@ -1,5 +1,5 @@
 <?php
-namespace Api\Model\Table;
+namespace App\Model\Table;
 
 use Cake\ORM\Table;
 

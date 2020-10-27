@@ -9,13 +9,16 @@ class AccountsPluginsTable extends Table
 
     public static function defaultConnectionName()
     {
-        return 'systems';
+        return 'api_accounts';
     }
 
     public function initialize(array $config)
     {
-        $this->setTable('systems.accounts');
+        $this->setTable('api_accounts.accounts_plugins');
     }
 
-    
+    public $contain_map = [];
+    public $links = [
+
+    ];
 }

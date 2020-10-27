@@ -39,6 +39,68 @@ class SettingsController extends AppController
         $this->set(compact('records'));
     }
 
+    public function view($className)
+    {
+        $record = $this->loadModel('Settings')->find()->where([ 'className' => $className ])->first();
+        $this->viewBuilder()->setLayout('default_html');
+        $this->set(compact('record'));
+    }
+
+    /*
+	 * Autoupdate ACL Nodes
+     */
+    public function updateRecords()
+    {
+        $this->render(false);
+
+        // App директория
+        $this->handleControllers(APP. '/Model/Table/', 'App');
+
+        // Плагины
+        $plugin_list = scandir(ROOT.'/plugins/');
+        foreach($plugin_list as $plugin_name) {
+
+            preg_match('(\.)', $plugin_name, $matches);
+
+            if($plugin_name != '.' && $plugin_name != '..' && !$matches) {
+                $folder_path = ROOT.'/plugins/'.$plugin_name.'/src/Model/Table/';
+                $this->handleControllers($folder_path, $plugin_name);
+            }
+        }
+
+    }
+
+
+    function handleControllers($folder_path, $plugin_name)
+    {
+
+        $settingModel = TableRegistry::get('Settings');
+
+        $controller_list = scandir($folder_path);
+        foreach($controller_list as $class_file) {
+            if($class_file != '.' && $class_file != '..') {
+
+                $class_name = '\\'.$plugin_name.'\Model\\Table\\' .str_replace('.php', '', $class_file);
+
+
+               $model = new $class_name();
+               $newRecord = [
+                   'plugin' => $plugin_name,
+                   'className' => $plugin_name . '.' . str_replace('Table.php', '', $class_file)
+               ];
+                if(!$settingModel->exists(['className' => $plugin_name . '.' . str_replace('Table.php', '', $class_file)])) {
+                    $settingModel->save($settingModel->newEntity($newRecord));
+                    debug($model);
+                }
+
+            }
+        }
+
+    }
+
+
+
+
     public function getDumpDefaultDb()
     {
         $connectionCreator = ConnectionManager::get('default');//debug($connectionCreator);
@@ -87,124 +149,24 @@ class SettingsController extends AppController
         $this->set( compact('plugin_list') );
     }
 
-    function getList()
-    {
-        $list = $this->Settings->find('list', [
-            'keyField' => 'className',
-            'valueField' => 'title'
-        ])
-        ->order(['Settings.title' => 'ASC']);
-
-        $this->__outputJSON(['list' => $list]);
-    }
-
-    public function view($className)
-    {
-        $record = $this->loadModel('Settings')->find()->where([ 'className' => $className ])->first();
-        $this->viewBuilder()->setLayout('default_html');
-        $this->set(compact('record'));
-    }
 
 
-    public function getData( $className = null, $settings = [], $where = [] )
-    {
-	    if(!$className) return null;
-	    $ns = $this->setNamespace( $className );
 
-        $this->paginate = [
-            'limit' => 25,
-            'order' => [
-              //'Articles.title' => 'asc'
-            ]
-        ];
-
-        if($this->request->getData('render_view')) {        
-            $this->loadDataTree();
-        } else {
-
-	        $model = $this->Settings->get($className);
-            $model['settings'] = unserialize($model['settings']);
-            
-            // Get conditions 
-           // $requestData =      
-	        $where = (!$where) ? 
-	            $this->Filter->handling_request_data( $this->request->getData('filter.self'), $model['settings'] ) : $this->Filter->handling_request_data( $where, $model['settings'] );
-
-            // Get records          
-            $query = TableRegistry::get($ns['className'])->find();
-
-            // Устанавливаем индивидуальные параметры в контроллере
-            if($this->request->getData('filter.join')) {        
-                $where_extend = $this->setJoinConditions($query, $where, $this->request->getData('filter.join'));
-            }
-		  
-            // Set OR
-            if(!empty($where[str_replace('.', '_', $ns['className'])]['OR'])) {
-	            $or_params = $where[str_replace('.', '_', $ns['className'])]['OR'];
-		    
-                $query->where(function (QueryExpression $exp) use ($or_params) {
-                    return $exp->or_($or_params);
-                });
-            }
-		    
-            // Set AND
-            if(!empty($where[str_replace('.', '_', $ns['className'])]['AND'])) {
-	            $or_params = $where[str_replace('.', '_', $ns['className'])]['AND'];
-		    
-                $query->where(function (QueryExpression $exp) use ($or_params) {
-                    return $exp->and_($or_params);
-                });
-            }
-		    
-            // debug($settings['settings']['contains']);
-            if(isset($model['settings']['contains']))  $query->contain( $model['settings']['contains'] )->order([ $ns['alias'].'.id' => 'DESC' ]);        
-	       
-            $model['records'] = $query;
-            // Output
-            $this->paginate($model['records']);
-            $this->set(compact( 'model' ));
-
-            $this->render('/ModelSettings/get_data');         
-        }                          
-    }
-
-
-    /*
-     * Настройка фильтра
-     * string $className - name of class
-    */
-    public function setFilterParams($className)
-    {
-	    $model = $this->get($className, null);
-        $this->set(compact('model'));
-    }
-    
-    /*
-     * Настройка отображения общих списков
-     * string $className - name of class
-    */
-    public function setViewParams($className)
-    {
-	    $ns = $this->setNamespace($className);
-	    $model = $this->get($className, null);
-        $this->set(compact('model', 'ns'));
-    }
     
 
     /* 
 	 * Обновить все базовые модели
-	 */ 
-    public function dropMainAll()
+	 */
+    function updateAll()
     {
-        $records = $this->Settings->find()->where([  ]);
+        $records = $this->Settings->find();
 
         foreach($records as $record) {
-	        $this->get($record->className);
+            $this->update($record->className);
         }
-        
+
         $this->render(false);
     }
-
     /*
      * updateSettings - обновление одной модели	
      */
@@ -217,8 +179,8 @@ class SettingsController extends AppController
 	    $settings = $this->getSettings($className);
 	    $record['settings'] = serialize($settings);
 	    if( $this->Settings->save($record) ) { //debug(unserialize($record['settings']));
-		    echo 'Model <b>ID:'.$record['id'].' ' .$className. '</b> has been update <br>'; 
-		}	
+		    echo 'Model <b>ID:'.$record['id'].' ' .$className. '</b> has been update <br>';
+		}
 	    
 	    //return $record;    
     }
@@ -235,9 +197,9 @@ class SettingsController extends AppController
 
 	    $ns = (empty($this->ns)) ? $this->setNamespace($className) : $this->ns;	   	    
 		$model = '\\'.ucfirst($ns['plugin']).'\Model\\Table\\'.$ns['alias'].'Table';
-		
+
 		$model = new $model;
-		
+
 		$record['settings']['links'] = $model->links;
 		
 		$record['settings'] = serialize($record['settings']);
@@ -263,10 +225,10 @@ class SettingsController extends AppController
 	 * Обновить базовую модель
 	 */ 
     public function getSettings($className, $association_list = null, $callClassName = null, $main_model = null )
-    {       
+    {
         // Get Model
 	    $ns = (empty($this->ns)) ? $this->setNamespace($className) : $this->ns;	   	    
-		
+
 		if(!$main_model) { 
 			$model = '\\'.ucfirst($ns['plugin']).'\Model\\Table\\'.$ns['alias'].'Table';
 		} else {
@@ -278,7 +240,7 @@ class SettingsController extends AppController
 
 	    // Get record 
         $record = $this->Settings->find()->where([ 'className' => $className ])->first();
-        
+
         $settings['className'] = $className;
         $settings['alias'] = $ns['alias'];
         $settings['flag'] = 'visible';
@@ -290,10 +252,10 @@ class SettingsController extends AppController
         if($callClassName) $settings['parent_field'] = $callClassName;
 
 	    if(class_exists($model)) {
-		    
+
 	        $model = new $model;
-	        
-	        
+
+
 /*
 	        $associations = $model->associations();//debug($associations);
 foreach ($associations->getByType('HasMany') as $item) {debug($item->className());
@@ -313,7 +275,7 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
 
 
 	        $settings['cells'] = $this->getTableSchema($className);
-	        
+
             if(!$association_list) { // If it basic model
 		        $settings['links'] = $model->links;
 				$settings['contains'] = [];
@@ -360,10 +322,9 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
     {
 	    $model = TableRegistry::get($className);
 
-        $connectionCreator = ConnectionManager::get($model->defaultConnectionName()); 
-        //$connectionCreator->config()['database'] 
+        $connectionCreator = ConnectionManager::get('default');//$model->defaultConnectionName()
         
-        $shared_bases = ['api', 'api_default'];
+        $shared_bases = ['api', 'api_default', 'api_accounts'];
         $db_name = (!in_array($connectionCreator->config()['database'], $shared_bases )) ? 'api_default' : $connectionCreator->config()['database'];
 
         $table_name = explode('.', $model->getTable());
@@ -374,6 +335,8 @@ foreach ($associations->getByType('HasMany') as $item) {debug($item->className()
         WHERE table_schema = \''.$db_name. '\' 
             AND table_name = \''.$table_name.'\'
         LIMIT 1;';
+
+        $connectionCreator->getDriver()->enableAutoQuoting(true);
 
         if($result = $connectionCreator->execute($query)->fetchAll('assoc')) {
 

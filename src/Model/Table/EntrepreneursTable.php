@@ -43,8 +43,46 @@ class EntrepreneursTable extends Table
 
 
     public $contain_map = [
-		'user_id' => [ 'model' => 'Users', 'alias' => 'user', 'propertyName' => 'full_name', 'assoc_type' =>  'belongsTo' ],
-		'city_id' => [ 'model' => 'Cities', 'alias' => 'cities', 'propertyName' => 'full_name', 'assoc_type' =>  'belongsTo' ],
+        'id' => [
+            'pattern' => '{{id}}',
+            'index' => [
+                'width' => '70px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => '<span>Номер<br><sup class="grid_list__item sup">ID</sup></span>'
+            ]
+        ],
+        'full_name' => [
+            'pattern' => '<a href="/entrepreneurs/view/{{id}}/">{{full_name}}</a>',
+            'index' => [
+                'width' => '350px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Название'
+            ]
+        ],
+        'inn' => [
+            'pattern' => '{{inn}}',
+            'index' => [
+                'width' => '150px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'ИНН'
+            ]
+        ],
+        'ogrn' => [
+            'pattern' => '{{ogrn}}',
+            'index' => [
+                'width' => '150px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'ОГРН'
+            ]
+        ]
     ];
 
 

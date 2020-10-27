@@ -18,6 +18,8 @@ class AddrobjTable extends Table
         
     }
 
+    public $contain_map = [];
+    public $links = [];
 
 } 
 ?>

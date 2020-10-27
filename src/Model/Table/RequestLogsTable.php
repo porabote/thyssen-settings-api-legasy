@@ -24,5 +24,8 @@ class RequestLogsTable extends Table
         ]);
         
     }
-    
+
+    public $contain_map = [];
+    public $links = [];
+
 }

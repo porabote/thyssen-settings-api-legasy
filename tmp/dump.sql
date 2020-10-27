@@ -79,17 +79,19 @@ CREATE TABLE `bank_accounts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `contractor_id` int(11) DEFAULT NULL,
   `RS` varchar(20) DEFAULT NULL COMMENT 'Расчетный счет',
-  `NEWNUM` varchar(9) DEFAULT NULL COMMENT 'Бик',
-  `NAMEP` varchar(50) DEFAULT NULL COMMENT 'Название',
-  `NNP` varchar(50) DEFAULT NULL COMMENT 'Город',
-  `KSNP` varchar(20) DEFAULT NULL COMMENT 'Кор. счет',
-  `type` enum('base','default') DEFAULT NULL,
+  `bic` varchar(9) DEFAULT NULL COMMENT 'Бик',
+  `bank_name` varchar(150) DEFAULT NULL COMMENT 'Название банка',
+  `bank_city` varchar(50) DEFAULT NULL COMMENT 'Город',
+  `bank_cs` varchar(20) DEFAULT NULL COMMENT 'Кор. счет',
+  `type` enum('base','default','extra') DEFAULT NULL,
   `flag` enum('on','off','delete') DEFAULT NULL,
   `date_created` timestamp NULL DEFAULT NULL,
+  `guid_schneider` varchar(100) DEFAULT NULL,
+  `swift` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-INSERT INTO `bank_accounts` VALUES (1,52,'40807810700000000151','044525101','ООО \"ДОЙЧЕ БАНК\"','МОСКВА','30101810100000000101','default','on','2018-07-02 21:25:06'),(2,52,'40807810500000000267','044525101','ООО \"ДОЙЧЕ БАНК\"','МОСКВА','30101810100000000101','base','on','2018-07-02 21:25:54');
+INSERT INTO `bank_accounts` VALUES (1,52,'40807810700000000151','044525101','ООО \"ДОЙЧЕ БАНК\"','МОСКВА','30101810100000000101','default','on','2018-07-02 21:25:06',NULL,NULL),(2,52,'40807810500000000267','044525101','ООО \"ДОЙЧЕ БАНК\"','МОСКВА','30101810100000000101','base','on','2018-07-02 21:25:54',NULL,NULL);
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `batches` (
@@ -114,6 +116,25 @@ CREATE TABLE `batches` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
+CREATE TABLE `bics` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bic` varchar(9) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `data_json` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='бики';
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `bills_certificates` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `certificate_id` int(11) DEFAULT NULL,
+  `bill_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `brands` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT 'Название',
@@ -124,6 +145,39 @@ CREATE TABLE `brands` (
   `preview_text` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `business_requests` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `record_id` int(11) DEFAULT NULL,
+  `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `className` varchar(30) DEFAULT NULL,
+  `label` varchar(30) DEFAULT NULL,
+  `data_json` text,
+  `flag` enum('on','off','delete') DEFAULT 'on',
+  `namespace` varchar(255) DEFAULT NULL,
+  `action` varchar(30) DEFAULT NULL,
+  `token` varchar(50) DEFAULT NULL,
+  `accepted_schema` text,
+  `accepted_facts` text,
+  `status_id` int(11) DEFAULT NULL,
+  `summa` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `business_schemas` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `schema_body` text,
+  `modelName` varchar(50) DEFAULT NULL,
+  `add_data_pattern` varchar(255) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `version` int(11) DEFAULT NULL,
+  `type` enum('accepted') DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
@@ -229,25 +283,26 @@ CREATE TABLE `comments` (
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `companies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL COMMENT 'Пользователь',
-  `city_id` int(5) DEFAULT NULL COMMENT 'Город',
+  `user_id` int(11) NOT NULL,
+  `city_id` int(5) DEFAULT NULL,
   `type_id` int(11) DEFAULT NULL,
   `self` int(1) DEFAULT NULL,
   `tax_id` int(11) DEFAULT '1',
   `task_count` int(11) DEFAULT NULL,
-  `okpo` int(11) DEFAULT NULL COMMENT 'ОКПО',
-  `kpp` bigint(12) DEFAULT NULL,
+  `okpo` varchar(12) DEFAULT NULL,
+  `kpp` varchar(11) DEFAULT NULL,
   `created` datetime NOT NULL,
   `count_modified` date NOT NULL,
-  `inn` varchar(12) DEFAULT NULL COMMENT 'Инн',
-  `oktmo` varchar(11) DEFAULT NULL COMMENT 'ОКТМО',
-  `name` varchar(255) NOT NULL COMMENT 'Название',
-  `full_name` varchar(100) NOT NULL COMMENT 'Полное название',
-  `osnovanie` varchar(100) DEFAULT NULL COMMENT 'Действует на основании (устава)',
-  `ogrn` varchar(20) DEFAULT NULL COMMENT 'ОГРН',
-  `brandName` varchar(100) DEFAULT NULL COMMENT 'Бренд',
+  `inn` varchar(12) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `oktmo` varchar(11) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `full_name` varchar(255) DEFAULT NULL,
+  `osnovanie` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `ogrn` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `brandName` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
   `datas` text,
   `flag` enum('on','off','delete') DEFAULT NULL,
+  `credinform_guid` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -274,7 +329,7 @@ CREATE TABLE `configs` (
   `title` varchar(250) NOT NULL DEFAULT '',
   `alias` varchar(40) NOT NULL,
   `value` text,
-  `value_type` enum('int','string','srlz') DEFAULT 'int',
+  `value_type` enum('int','string','srlz','json') DEFAULT 'int',
   `className` varchar(50) DEFAULT NULL,
   `label` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -323,6 +378,7 @@ CREATE TABLE `contents` (
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `contract_extantions` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `parent_id` int(11) DEFAULT NULL,
   `contract_id` int(11) DEFAULT NULL,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '' COMMENT 'Название',
   `set_id` int(11) DEFAULT NULL,
@@ -349,6 +405,11 @@ CREATE TABLE `contract_extantions` (
   `purchase_id` int(11) DEFAULT NULL COMMENT 'Номер закупки',
   `members` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `who_sign_queue_id` int(11) DEFAULT NULL COMMENT 'На подписи у',
+  `nds_percent` varchar(10) DEFAULT NULL,
+  `nds_summa` decimal(10,2) DEFAULT NULL,
+  `pay_object` enum('tovary','uslugi','arenda','zarplata','nalog''tamozhnya') DEFAULT NULL,
+  `comment` text,
+  `guid` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -376,13 +437,17 @@ CREATE TABLE `contract_sets` (
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `contractors` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `c_id` int(11) DEFAULT NULL COMMENT 'companies',
-  `e_id` int(11) DEFAULT NULL COMMENT 'entrepreneurs',
-  `p_id` int(11) DEFAULT NULL COMMENT 'peoples',
+  `inn` varchar(20) DEFAULT NULL,
+  `kpp` varchar(11),
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
   `type` enum('self','client','distributor','transport_company') DEFAULT 'client',
   `record_id` int(11) DEFAULT NULL,
   `model` enum('Companies','Entrepreneurs','Peoples') DEFAULT NULL,
+  `okpo` tinytext,
+  `companyId` varchar(100) DEFAULT NULL,
+  `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `guid_schneider` varchar(100) DEFAULT NULL,
+  `credinform_guid` tinytext,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -421,6 +486,7 @@ CREATE TABLE `contracts` (
   `files_paths` text,
   `date_created` datetime DEFAULT NULL,
   `date_modified` datetime DEFAULT NULL,
+  `guid_schneider` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -470,6 +536,7 @@ CREATE TABLE `departments` (
   `rght` int(5) NOT NULL,
   `custom_type` int(11) DEFAULT NULL,
   `level` int(11) DEFAULT NULL,
+  `label` enum('other','accounting','mto') DEFAULT 'other',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -506,7 +573,7 @@ CREATE TABLE `entrepreneurs` (
   `name` varchar(255) NOT NULL COMMENT 'Название',
   `full_name` varchar(100) NOT NULL COMMENT 'Полное название',
   `inn` varchar(12) DEFAULT NULL COMMENT 'ИНН',
-  `okpo` int(11) DEFAULT NULL COMMENT 'ОКПО',
+  `okpo` varchar(12) DEFAULT NULL COMMENT 'ОКПО',
   `oktmo` varchar(11) DEFAULT NULL COMMENT 'ОКТМО',
   `ogrn` varchar(20) DEFAULT NULL COMMENT 'ОГРН',
   `user_id` int(11) NOT NULL COMMENT 'Пользователь',
@@ -516,6 +583,7 @@ CREATE TABLE `entrepreneurs` (
   `city_id` int(5) DEFAULT NULL COMMENT 'Город',
   `brandName` varchar(100) DEFAULT NULL COMMENT 'Бренд',
   `flag` enum('on','of','delete') DEFAULT NULL,
+  `credinform_guid` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -539,6 +607,7 @@ CREATE TABLE `files` (
   `height` int(11) DEFAULT NULL COMMENT 'Высота(изобр.)',
   `size` int(11) DEFAULT NULL COMMENT 'Размер в байтах',
   `record_id` int(11) DEFAULT NULL COMMENT 'ID модуля',
+  `parent_id` int(11) DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
   `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Дата создания записи',
   `prefix` varchar(30) DEFAULT NULL COMMENT 'Префикс названия',
@@ -552,10 +621,11 @@ CREATE TABLE `files` (
   `model_alias` varchar(50) DEFAULT NULL COMMENT 'Алиас модуля',
   `plugin` varchar(50) DEFAULT NULL,
   `label` varchar(40) DEFAULT NULL COMMENT 'Особая метка (example cover img)',
-  `token` varchar(32) DEFAULT NULL,
+  `token` varchar(50) DEFAULT NULL,
   `main` enum('none','single','multi') DEFAULT 'none' COMMENT 'Является ли фото главным в группе',
-  `flag` enum('on','off','delete') NOT NULL DEFAULT 'on' COMMENT 'Статус',
+  `flag` enum('on','off','to_delete','delete') NOT NULL DEFAULT 'on' COMMENT 'Статус',
   `data_s_path` varchar(255) DEFAULT NULL COMMENT 'ID модуля',
+  `data_json` text,
   PRIMARY KEY (`id`),
   KEY `token` (`token`),
   KEY `flag` (`record_id`,`model_alias`,`label`,`main`,`flag`)
@@ -567,7 +637,7 @@ CREATE TABLE `files_data` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `file_id` int(11) DEFAULT NULL,
   `name` varchar(250) DEFAULT NULL,
-  `data_s` longtext,
+  `data_json` longtext,
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `path` varchar(255) DEFAULT NULL,
   `flag` enum('new','process','complete') DEFAULT 'new',
@@ -611,6 +681,18 @@ CREATE TABLE `logs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
+CREATE TABLE `mails_patterns` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `mail_title` varchar(256) DEFAULT NULL,
+  `mail_body` text,
+  `description` varchar(255) DEFAULT NULL,
+  `layout` varchar(255) DEFAULT 'Email/html/default',
+  `sample_data_json` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
 CREATE TABLE `menus` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -623,9 +705,9 @@ CREATE TABLE `menus` (
   `plugin` varchar(20) NOT NULL DEFAULT 'App',
   `flag` enum('on','off','delete') DEFAULT 'off',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1055 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-INSERT INTO `menus` VALUES (1,'Документы','/docs/contracts/',NULL,1,12,'Contracts','index','Docs','on'),(2,'Контрагенты','#',NULL,13,38,'Contractors','index','App','on'),(3,'Справочники','#',NULL,39,62,'Classis','index','App','on'),(4,'Склад','/residues/index/',NULL,63,68,'Residues','index','App','on'),(5,'Номенклатура','/nomenclatures/index/',3,40,51,'Nomenclatures','index','App','on'),(6,'Учетные записи','/users/index/',3,52,53,'Users','index','App','on'),(7,'Единицы измерения','/units/index/',3,54,55,'Units','index','App','on'),(8,'Физические лица','/peoples/index/',2,14,17,'Peoples','index','App','on'),(10,'Юридические лица','/companies/index/',2,18,21,'Companies','index','App','on'),(12,'Индивидуальные предп.','/entrepreneurs/index/',2,22,25,'Entrepreneurs','index','App','on'),(13,'Закупки','#',NULL,69,76,'PurchaseRequest','','App','off'),(15,'Мои компании','/contractors/my/',2,26,37,'Сompanies','index','App','on'),(16,'Шаблоны','/docs/patterns/index/',1,2,9,'Patterns','index','App','on'),(17,'Мои договоры','/docs/contracts/index/',1,10,11,'Сontracts','index','App','on'),(18,'Склады','/stores/index/',4,64,65,'Stores','index','App','on'),(20,'Категории номенклатуры','/customTypes/index/App.Nomenclatures/',5,41,42,'Сatalogs','index','App','on'),(21,'Бренды','/brands/index/',5,43,44,'Brands','index','App','on'),(22,'Тип номенклатуры','/nomenclatures-kinds/index/',5,45,46,'NomenclaturesKinds','index','App','on'),(23,'Импорт/Экспорт','/nomenclatures/price/',5,47,48,'Nomenclatures','price','App','on'),(24,'Комплекты','/sets/index/',5,49,50,'Sets','index','App','on'),(29,'Партии','/batches/index/',4,66,67,'Batches','index','App','on'),(31,'Сайт','#',NULL,77,86,'Contents','index','Api','off'),(32,'Страницы','/api/contents/feed/',31,78,79,'Contents','index','Api','on'),(34,'Блоги','/api/blogs/index/Api.Blogs/',31,82,83,'Blogs','index','Api','on'),(35,'Новости','/api/news/feed/',31,84,85,'News','index','Api','on'),(37,'Контакты','/contacts/index/',3,58,59,'Contacts','index','App','on'),(40,'Статусы','/statuses/index/',3,60,61,'Statuses','index','App','on'),(41,'Общие шаблоны','/docs/patterns/indexApi',16,3,4,'Patterns','indexApi','Docs','on'),(42,'Категории шаблонов','/customTypes/index/Docs.Patterns/',16,5,6,'CustomTypes','index','Docs','on'),(43,'Шаблоны первичных документов','/docs/primaryDocumentsPatterns/index/',16,7,8,'PrimaryDocumentsPatterns','index','Docs','on'),(44,'Закупки','/purchases/index/',13,70,71,'Purchases','index','App','off'),(45,'Счета','/contractExtantions/invoices/',13,72,73,'ContractExtantions','invoices','App','off'),(46,'Заявки на закупку','/purchaseRequest/index/',13,74,75,'PurchaseRequest','index','App','off'),(47,'Контакты сотрудников','/posts/index/',3,32,33,'Posts','index','App','on'),(48,'Номенклатура в работе','/purchaseNomenclatures/index/',13,8,9,'PurchaseNomenclatures','index','App','on'),(49,'Меню системы','/menus/index/',3,62,63,'Menus','index','App','on'),(50,'Номенклатура','/api/nomenclatures/index/',31,86,87,'Nomenclatures','index','Api','on'),(51,'Конфигурация','/api/configs/index/',31,88,89,'Configs','index','Api','on'),(52,'Баннеры','/api/banners/index/',31,90,91,'Banners','index','Api','on'),(53,'Файлы','/files/index/',3,62,63,'Files','index','App','on'),(54,'Загруженные прайсы','/files/listPrices/',23,48,49,'Files','listPrices','App','on'),(55,'Категории товаров (Каталог)','/api/categories/feedTree/catalog/',50,87,88,'Catalogs','feedTree','App','on'),(56,'Опции категорий','/api/categoryOptions/index/',50,89,90,'CategoryOptions','index','App','on'),(57,'Сертификаты','/store/documentations/',1,74,75,'Documentations','index','Docs','on'),(58,'Виджеты','/widgets/feed/',3,36,37,'Widgets','feed','App','on');
+INSERT INTO `menus` VALUES (1,'Документы','/docs/contracts/',NULL,1,14,'Contracts','index','Docs','on'),(2,'Контрагенты','/contractors/',NULL,15,24,'Contractors','index','App','on'),(3,'Справочники','#',NULL,25,66,'Classis','index','App','on'),(4,'Склад','/residues/index/',NULL,67,72,'Residues','index','App','on'),(5,'Номенклатура','/nomenclatures/index/',3,26,39,'Nomenclatures','index','App','on'),(6,'Учетные записи','/users/index/',3,40,41,'Users','index','App','on'),(7,'Единицы измерения','/units/index/',3,42,43,'Units','index','App','on'),(8,'Физические лица','/peoples/index/',2,16,17,'Peoples','index','App','on'),(10,'Юридические лица','/companies/index/',2,18,19,'Companies','index','App','on'),(12,'Индивидуальные предп.','/entrepreneurs/index/',2,20,21,'Entrepreneurs','index','App','on'),(13,'Закупки','#',NULL,73,86,'Purchases','index','App','on'),(15,'Мои компании','/contractors/my/',2,22,23,'Сompanies','index','App','on'),(16,'Шаблоны','/docs/patterns/index/',1,2,9,'Patterns','index','App','on'),(17,'Мои договоры','/docs/contracts/index/',1,10,11,'Сontracts','index','App','on'),(18,'Склады','/stores/index/',4,68,69,'Stores','index','App','on'),(20,'Группы номенклатуры','/customTypes/index/App.Nomenclatures/',5,27,28,'Сatalogs','index','App','on'),(21,'Бренды','/brands/index/',5,29,30,'Brands','index','App','on'),(22,'Тип номенклатуры','/nomenclatures-kinds/index/',5,31,32,'NomenclaturesKinds','index','App','on'),(23,'Импорт/Экспорт','/nomenclatures/price/',5,33,36,'Nomenclatures','price','App','on'),(24,'Комплекты','/sets/index/',5,37,38,'Sets','index','App','on'),(29,'Партии','/batches/index/',4,70,71,'Batches','index','App','on'),(31,'Сайт','#',NULL,87,100,'','','Site','off'),(32,'Страницы','/contents/index/App.Contents/contents/',31,88,89,'Contents','index','Site','on'),(34,'Статьи (Блоги)','/contents/index/App.Contents/blogs/',31,90,91,'Blogs','index','Site','on'),(35,'Новости','/contents/index/App.Contents/news/',31,92,93,'News','index','Site','on'),(37,'Контакты','/contacts/index/',3,44,45,'Contacts','index','App','on'),(40,'Статусы','/statuses/index/',3,46,47,'Statuses','index','App','on'),(41,'Общие шаблоны','/docs/patterns/indexApi',16,3,4,'Patterns','indexApi','Docs','on'),(42,'Категории шаблонов','/customTypes/index/Docs.Patterns/',16,5,6,'CustomTypes','index','Docs','on'),(43,'Шаблоны первичных документов','/docs/primaryDocumentsPatterns/index/',16,7,8,'PrimaryDocumentsPatterns','index','Docs','on'),(44,'Запросы КП','/purchases/index/',13,74,75,'Purchases','index','App','on'),(45,'Счета','/store/bills/index/',13,76,77,'Bills','index','Store','on'),(46,'Заявки','/purchaseRequest/index/',NULL,101,102,'PurchaseRequest','index','App','on'),(47,'Контакты сотрудников','/posts/index/',3,48,49,'Posts','index','App','on'),(48,'Номенклатура в работе','/purchaseNomenclatures/index/',13,78,79,'PurchaseNomenclatures','index','App','on'),(49,'Сертификаты','/store/documentations/',1,12,13,'Documentations','index','Store','on'),(50,'Виджеты','/widgets/feed/',3,50,55,'Widgets','feed','App','on'),(51,'Платежи','/payments/',13,80,81,'Payments','index','App','on'),(52,'Накладные транспортные','/docs/waybills/',13,82,83,'Waybills','index','Docs','on'),(53,'Заявки на доплату','/businessRequests/index/',13,84,85,'BusinessRequests','index','App','on'),(54,'Меню системы','/menus/index/',3,56,57,'Menus','index','App','on'),(55,'Номенклатура','/api/nomenclatures/index/',31,94,95,'Nomenclatures','index','Api','on'),(56,'Конфигурация','/api/configs/index/',31,96,97,'Configs','index','Api','on'),(57,'Баннеры','/api/banners/index/',31,98,99,'Banners','index','Api','on'),(58,'Файлы','/files/index/',3,58,59,'Files','index','App','on'),(59,'Загруженные прайсы','/files/listPrices/',23,34,35,'Files','listPrices','App','on'),(60,'Категории товаров (Каталог)','/api/categories/feedTree/catalog/',50,51,52,'Catalogs','feedTree','App','on'),(61,'Опции категорий','/api/categoryOptions/index/',50,53,54,'CategoryOptions','index','App','on'),(63,'Шаблоны писем','/mailsPatterns/',3,60,61,'MailsPatterns','index','App','on'),(64,'Бизнес-схемы','/businessSchemas/',3,62,63,'BusinessSchemas','index','App','on'),(65,'Бизнес запросы','/businessRequests/',3,64,65,'BusinessRequests','index','App','on');
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `messages` (
@@ -808,25 +890,57 @@ INSERT INTO `patterns` VALUES (1,NULL,'Шаблон-образец пустой'
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `payments` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Номер',
   `post_id` int(11) DEFAULT NULL,
-  `bill_id` int(11) DEFAULT NULL,
+  `bill_id` int(11) DEFAULT NULL COMMENT 'Счет (номер - дата)',
   `client_id` int(11) DEFAULT NULL,
-  `contractor_id` int(11) DEFAULT NULL,
-  `summa` decimal(10,2) DEFAULT NULL,
-  `rate_euro` decimal(4,2) DEFAULT NULL,
-  `date_payment` timestamp NULL DEFAULT NULL,
+  `contractor_id` int(11) DEFAULT NULL COMMENT 'Поставщик',
+  `summa` decimal(10,2) DEFAULT NULL COMMENT 'Сумма',
+  `rate_euro` decimal(4,2) DEFAULT NULL COMMENT 'Сумма ЕВРО',
+  `date_payment` timestamp NULL DEFAULT NULL COMMENT 'Дата оплаты',
   `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `flag` enum('on','delete') DEFAULT 'on',
-  `pay_type` enum('none','avans','postoplata') DEFAULT NULL,
+  `flag` enum('on','delete') DEFAULT 'on' COMMENT 'Метка',
+  `pay_type` enum('none','avans','postoplata') DEFAULT NULL COMMENT ' Вид оплаты (аванс/постоплата)',
   `currency` enum('RUR','USD','EUR') DEFAULT NULL,
-  `comment` text,
-  `status_id` int(11) DEFAULT '41',
-  `pay_week` int(2) DEFAULT NULL,
-  `object_id` int(11) DEFAULT NULL,
+  `comment` text COMMENT 'Комментарий',
+  `status_id` int(11) DEFAULT '41' COMMENT 'Статус',
+  `pay_week` int(2) DEFAULT NULL COMMENT 'Неделя',
+  `object_id` int(11) DEFAULT NULL COMMENT 'Объект',
   `data_json` text,
+  `purpose` text COMMENT 'Назначение',
+  `nds_summa` decimal(10,2) DEFAULT NULL,
+  `nds_percent` varchar(20) DEFAULT NULL COMMENT 'НДС %',
+  `business_request_id` int(11) DEFAULT NULL,
+  `pay_object` varchar(20) DEFAULT NULL COMMENT 'Объект платежа',
+  `vo_code` varchar(20) DEFAULT NULL COMMENT 'Код валютной операции',
+  `vo_type` varchar(20) DEFAULT NULL COMMENT 'тип валютной операции (оплата, предоплата)',
+  `guid` varchar(50) DEFAULT NULL,
+  `bill_comment` text COMMENT 'Предмет счёта',
+  `bill_number` varchar(100) DEFAULT NULL COMMENT 'Номер счета',
+  `payments_set_id` int(11) DEFAULT NULL,
+  `acceptor_id` int(11) DEFAULT NULL,
+  `percent_of_bill` int(11) DEFAULT NULL COMMENT 'Процент оплаты %',
+  `rate_usd` decimal(5,2) DEFAULT NULL,
+  `bill_file_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `payments_sets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date_payment` datetime DEFAULT NULL COMMENT 'Дата платежа',
+  `date_created` datetime DEFAULT NULL COMMENT 'Дата создания',
+  `comment` text COMMENT 'Комментарий',
+  `rate_euro` decimal(10,4) DEFAULT NULL COMMENT 'Курс евро',
+  `summa_eur` decimal(10,2) DEFAULT NULL COMMENT 'Сумма в евро',
+  `summa_rur` decimal(14,2) DEFAULT NULL COMMENT 'Сумма в рублях',
+  `payments_count` int(11) DEFAULT NULL COMMENT 'Количество платежей',
+  `sender_id` int(11) DEFAULT NULL COMMENT 'Отправил',
+  `week` int(11) DEFAULT NULL COMMENT 'Неделя',
+  `rate_usd` decimal(10,4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
@@ -975,6 +1089,15 @@ CREATE TABLE `purchase_nomenclatures` (
   `store_doc_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `purchase_nomenclatures_store_documentations` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `store_documentation_id` int(11) DEFAULT NULL,
+  `purchase_nomenclature_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
@@ -1141,9 +1264,9 @@ CREATE TABLE `statuses` (
   `flag` enum('on','off','delete') DEFAULT 'on' COMMENT 'Флаг',
   `label` varchar(50) DEFAULT NULL COMMENT 'Метка',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
-INSERT INTO `statuses` VALUES (1,NULL,1,2,'Новая','App.PurchaseRequest','begin',NULL,'on',NULL),(2,NULL,5,6,'Возвращено','App.PurchaseRequest','begin',NULL,'on',NULL),(3,NULL,7,8,'На подписании','App.PurchaseRequest','process',NULL,'on',NULL),(4,NULL,11,12,'В работе','App.PurchaseRequest','end',NULL,'on',NULL),(5,NULL,9,10,'Исполнено','App.PurchaseRequest','end',NULL,'on',NULL),(6,NULL,15,16,'Отменена','App.PurchaseRequest','cancel',NULL,'on',NULL),(14,NULL,27,28,'Готова к тестированию','App.Tasks','end',NULL,'on',NULL),(13,NULL,25,26,'Подписано','App.PurchaseRequest','process',NULL,'on',NULL),(9,NULL,17,18,'Новая','App.Tasks','begin',NULL,'on',NULL),(10,NULL,19,20,'В работе','App.Tasks','process',NULL,'on',NULL),(11,NULL,21,22,'Исполнена','App.Tasks','end',NULL,'on',NULL),(12,NULL,23,24,'Отменена','App.Tasks','cancel',NULL,'on',NULL),(15,NULL,29,30,'Новая','App.Purchases','begin',NULL,'on',NULL),(16,NULL,31,32,'В работе','App.Purchases','process',NULL,'on',NULL),(17,NULL,33,34,'Закуплено','App.Purchases','end',NULL,'on',NULL),(18,NULL,35,36,'Отменена','App.Purchases','cancel',NULL,'on',NULL),(19,NULL,17,18,'Новая','App.Tasks','begin',NULL,'on',NULL),(20,NULL,19,20,'В работе','App.Tasks','process',NULL,'on',NULL),(21,NULL,21,22,'Исполнена','App.Tasks','end',NULL,'on',NULL),(22,NULL,23,24,'Отменена','App.Tasks','cancel',NULL,'on',NULL);
+INSERT INTO `statuses` VALUES (1,NULL,1,2,'Новая','App.PurchaseRequest','begin',NULL,'on',NULL),(2,NULL,5,6,'Возвращено','App.PurchaseRequest','begin',NULL,'on',NULL),(3,NULL,7,8,'На подписании','App.PurchaseRequest','process',NULL,'on',NULL),(4,NULL,11,12,'В работе','App.PurchaseRequest','end',NULL,'on','run'),(5,NULL,9,10,'Закуплено','App.PurchaseRequest','end',NULL,'on',NULL),(6,NULL,15,16,'Отменена','App.PurchaseRequest','cancel',NULL,'on',NULL),(14,NULL,27,28,'Готова к тестированию','App.Tasks','end',NULL,'on',NULL),(13,NULL,25,26,'Подписано','App.PurchaseRequest','process',NULL,'on','signed'),(9,NULL,17,18,'Новая','App.Tasks','begin',NULL,'on',NULL),(10,NULL,19,20,'В работе','App.Tasks','process',NULL,'on',NULL),(11,NULL,21,22,'Исполнена','App.Tasks','end',NULL,'on',NULL),(12,NULL,23,24,'Отменена','App.Tasks','cancel',NULL,'on',NULL),(15,NULL,29,30,'Новая','App.Purchases','begin',NULL,'on',NULL),(16,NULL,31,32,'В работе','App.Purchases','process',NULL,'on',NULL),(17,NULL,33,34,'Закуплено','App.Purchases','end',NULL,'on',NULL),(18,NULL,35,36,'Отменена','App.Purchases','cancel',NULL,'on',NULL),(24,NULL,39,40,'На подписании','Store.Bills','process',NULL,'on',NULL),(23,NULL,37,38,'Новый','Store.Bills','begin',NULL,'on',NULL),(25,NULL,41,42,'Акцептован','Store.Bills','process',NULL,'on',NULL),(26,NULL,43,44,'Возвращено','Store.Bills','process',NULL,'on',NULL),(27,NULL,45,46,'Отправлено на предоплату','Store.Bills','process',NULL,'on',NULL),(28,NULL,47,48,'Отправлен на оплату полностью','Store.Bills','end',NULL,'on',NULL),(29,NULL,49,50,'Отменён','Store.Bills','cancel',NULL,'on',NULL),(30,NULL,51,52,'Новая','App.PurchaseNomenclatures','begin',NULL,'on',NULL),(31,NULL,53,54,'На подписании в заявке','App.PurchaseNomenclatures','process',NULL,'on',NULL),(32,NULL,55,56,'В счете на оплату','App.PurchaseNomenclatures','process',NULL,'on',NULL),(33,NULL,57,58,'Ожидает назначения ответственного','App.PurchaseNomenclatures','process',NULL,'on',NULL),(34,NULL,59,60,'Ответственный назначен','App.PurchaseNomenclatures','process',NULL,'on',NULL),(35,NULL,61,62,'Отменено','App.PurchaseNomenclatures','cancel',NULL,'on',NULL),(36,NULL,63,64,'Новый','Store.Documentations','begin',NULL,'on',NULL),(37,NULL,65,66,'На согласовании','Store.Documentations','process',NULL,'on',NULL),(38,NULL,67,68,'Согласован','Store.Documentations','end',NULL,'on',NULL),(39,NULL,69,70,'Возвращено','Store.Documentations','begin',NULL,'on',NULL),(40,NULL,71,72,'Отменено','Store.Documentations','cancel',NULL,'on',NULL),(41,NULL,73,74,'Не акцептован','App.Payments','begin',NULL,'on',NULL),(42,NULL,75,76,'Акцептован','App.Payments','end',NULL,'on',NULL),(49,NULL,85,86,'Документ возвращён на согласование','Store.Documentations','begin',NULL,'on',NULL),(43,NULL,77,78,'Новый','App.BusinessRequests','begin',NULL,'on',NULL),(44,NULL,79,80,'В процессе акцептования','App.BusinessRequests','process',NULL,'on',NULL),(45,NULL,81,82,'Акцептовано','App.BusinessRequests','end',NULL,'on',NULL),(46,NULL,83,84,'Акцепт отклонён','App.BusinessRequests','cancel',NULL,'on',NULL),(47,NULL,83,84,'Отменено','App.BusinessRequests','cancel',NULL,'on',NULL),(48,NULL,49,50,'В заявке на доплату','Store.Bills','process',NULL,'on',NULL);
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `store_documentations` (
@@ -1156,7 +1279,7 @@ CREATE TABLE `store_documentations` (
   `comment` text,
   `original_movement` text,
   `shema_handle` text,
-  `members` text,
+  `acceptance_scheme` text,
   `date_from` timestamp NULL DEFAULT NULL,
   `date_to` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)

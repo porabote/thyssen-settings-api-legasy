@@ -1,5 +1,5 @@
 <?php
-namespace App\Model\Table;
+namespace Docs\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -18,6 +18,8 @@ class PatternGroupsTable extends Table
 
     }
 
+    public $contain_map = [];
+    public $links = [];
 
 } 
 ?>

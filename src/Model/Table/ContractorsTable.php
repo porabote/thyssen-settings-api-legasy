@@ -91,7 +91,7 @@ class ContractorsTable extends Table
             ]
 	    ],
 	    'inn' => [
-		    'pattern' => '{{inn}}',
+		    'pattern' => '<b>{{inn}}</b>',
 	        'index' => [
 		        'width' => '120px',
 		        'show' => 1
@@ -100,11 +100,21 @@ class ContractorsTable extends Table
               'comment' => '<span>ИНН</span>'
             ]
 	    ],
+        'kpp' => [
+            'pattern' => '{{kpp}}',
+            'index' => [
+                'width' => '120px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => '<span>КПП</span>'
+            ]
+        ],
 	    'name' => [
-            'pattern' => '{% if model == "Companies" %} <a href="/companies/view/{{record_id}}/">{{name}}</a>
+            'pattern' => '<b>{% if model == "Companies" %} <a href="/companies/view/{{record_id}}/">{{name}}</a>
                           {% elseif model == "Peoples" %} <a href="/peoples/view/{{record_id}}/">{{name}}</a>
                           {% elseif model == "Entrepreneurs" %} <a href="/entrepreneurs/view/{{record_id}}/">{{name}}</a>
-                          {% endif %}',
+                          {% endif %}</b>',
 	        'index' => [
 		        'width' => '350px',
 		        'show' => 1
@@ -114,9 +124,9 @@ class ContractorsTable extends Table
             ]
 	    ],
 	    'model' => [
-            'pattern' => '{% if model == "Companies" %} Компания ({{record_id}})
-                          {% elseif model == "Peoples" %}Физ. лицо ({{record_id}}) 
-                          {% else %} ИП ({{record_id}})
+            'pattern' => '{% if model == "Companies" %}ID:{{record_id}} Компания
+                          {% elseif model == "Peoples" %}ID:{{record_id}}  Физ. лицо
+                          {% else %}ID:{{record_id}} ИП
                           {% endif %}',
             'index' => [
 	            'width' => '150px',

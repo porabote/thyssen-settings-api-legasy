@@ -11,5 +11,7 @@ class HistoryTable extends Table
         $this->setTable('histories');
         
     }
-    
+
+    public $contain_map = [];
+    public $links = [];
 }

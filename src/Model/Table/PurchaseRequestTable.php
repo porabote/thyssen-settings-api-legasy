@@ -121,6 +121,7 @@ class PurchaseRequestTable extends Table
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
+                'operator' => '=',
 				'output_type' => 'select',
 				'uri' => ['custom_type' => '5']	
 	        ]
