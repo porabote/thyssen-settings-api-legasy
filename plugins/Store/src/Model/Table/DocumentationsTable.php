@@ -9,7 +9,7 @@ class DocumentationsTable extends Table
 
     public function initialize(array $config)
     {
-        $this->setTable('store_documentations');        
+        $this->setTable('store_documentations');
 
         $this->belongsTo('Posts', [ 'className' => 'Posts', 'joinTable' => 'posts' ]);
         $this->belongsTo('Contractors');
@@ -30,7 +30,7 @@ class DocumentationsTable extends Table
             //'conditions' => [ 'PurchaseNomenclatures.parent_id IS NOT' => null ]
         ]);
 
-        
+
         $this->hasMany('Files', [
             'foreignKey' => 'record_id',
             'className' => 'Files',
@@ -41,7 +41,7 @@ class DocumentationsTable extends Table
 
     public $check_list = [
 	    'name' => [ 'rules' => [ 'notEmpty' ] ],
-	    'number' => [ 'rules' => [ 'notEmpty' ] ]   
+	    'number' => [ 'rules' => [ 'notEmpty' ] ]
     ];
 
     public $contain_map = [
@@ -121,7 +121,7 @@ class DocumentationsTable extends Table
             ],
             'db_params' => [
 	            'comment' => 'Статус'
-            ] 
+            ]
 	    ],
 	    'original_movement' => [
             'pattern' => '{% if original_movement %}Передано{% else %}Не передано{% endif %}',
@@ -132,7 +132,7 @@ class DocumentationsTable extends Table
             'db_params' => [
 	            'comment' => 'Оригинал'
             ]
-	    ],	    
+	    ],
 //	    'date_from' => [
 //            'pattern' => '{{date_from}}',
 //            'index' => [
@@ -155,7 +155,7 @@ class DocumentationsTable extends Table
 //	    ],
         'post_id' => [
 	    	'leftJoin' => 'Posts',
-	        'pattern' => '{{post.fio}}',
+	        'pattern' => '{{post.name}} - {{post.post_name}}',
 	        'filter' => [
 	    	    'modelName' => 'Posts',
 	            'url' => '/posts/getFindList/',
@@ -172,9 +172,9 @@ class DocumentationsTable extends Table
             ],
             'db_params' => [
 	            'comment' => 'Добавил'
-            ] 
+            ]
 	    ]
-	    	    
+
     ];
 
 	public $links = [
@@ -184,7 +184,7 @@ class DocumentationsTable extends Table
 			    'href' => '/store/documentations/view/{{record.id}}/',
 			    'class' => 'drop-button__hide-blok__link',
 			    'check' => false
-		    ]		    
+		    ]
 	    ]
 	];
 

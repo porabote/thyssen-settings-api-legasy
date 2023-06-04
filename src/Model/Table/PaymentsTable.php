@@ -9,10 +9,8 @@ use App\Model\Table\Router;
 
 class PaymentsTable extends Table
 {
-
     public function initialize(array $config)
     {
-
         $this->belongsTo('Store.Bills');
         $this->belongsTo('Posts');
         $this->belongsTo('Objects', [ 'className' => 'Departments', 'joinTable' => 'departments' ]);
@@ -20,22 +18,26 @@ class PaymentsTable extends Table
 	        'conditions' => [ 'Statuses.model_alias' => 'App.Payments' ]
         ]);
 
-        $this->belongsTo('Contractors'); 
-        $this->belongsTo('Objects', [ 'className' => 'Departments', 'joinTable' => 'departments' ]);       
+        $this->belongsTo('Contractors');
+        $this->belongsTo('Clients', [
+            'foreignKey' => 'client_id',
+            'className' => 'Contractors'
+        ]);
+        $this->belongsTo('Objects', [ 'className' => 'Departments', 'joinTable' => 'departments' ]);
 
         $this->belongsTo('Creator', [
             'foreignKey' => 'user_id',
             'className' => 'Posts',
             'propertyName' => 'creator'
-        ]);        
+        ]);
 
-        
+
         $this->hasOne('Files', [
             'foreignKey' => 'record_id',
             'className' => 'Files',
             'conditions' => [ 'model_alias' => 'App.Payments', 'flag' => 'on' ]
         ]);
-                       
+
 
         $this->addBehavior('Timestamp', [
             'events' => [
@@ -44,32 +46,28 @@ class PaymentsTable extends Table
                 ]
             ]
         ]);
-        
-    }
 
-    public function beforeSave($event, $entity, $options) {
-
-        $session = new Session();
-        if(!$entity->user_id) $entity->user_id = $session->read('Auth.User.id');
-        //if(!$entity->user_id) $entity->manager_id = $session->read('Auth.User.id');
-
-		# Форматируем дату публикации		
-		//if(!empty($_POST['date_deadline'])) $entity->date_deadline = date("Y-m-d H:i:s", strtotime($_POST['date_deadline']));
     }
 
     public $check_list = [
-        'summa' => [ 
-            'rules' => [ 
-                'notEmpty' 
-            ] 
-        ]               
+        'summa' => [
+            'rules' => [
+                'notEmpty'
+            ]
+        ]
     ];
 
     public $contain_map = [
         'id' => [
-            'pattern' => '<a href="/payments/view/{{id}}/">{{id}}</a>',
+            'leftJoin' => ['Bills' => ['FileOfBill']],
+            'pattern' => '
+                <a href="/payments/view/{{id}}/">{{id}}</a>
+                {% if bill.file_of_bill %}
+                  <a class="grid_list__icon link-arrow-blank left" target="blank" href="/payments/getScansAsPdf/{{id}}/">Скан PDF</a>
+                {% endif %}  
+            ',
             'index' => [
-                'width' => '70px',
+                'width' => '90px',
                 'display' => true
             ],
             'db_params' => [
@@ -95,6 +93,20 @@ class PaymentsTable extends Table
                 'comment' => '<span>Статус<br><sup class="grid_list__item sup">Status</sup></span>'
             ]
         ],
+        'data_json' => [
+            'pattern' => '
+            {% for psp in data_json.info %}
+                <p style="white-space: nowrap;">{{psp.summa|number_format(2, \'.\', \' \')}} | {{psp.psp}}</p>
+            {% endfor %}
+            ',
+            'index' => [
+                'width' => '200px',
+                'display' => true
+            ],
+            'db_params' => [
+                'comment' => '<span>PSP</span>'
+            ]
+        ],
         'object_id' => [
             'leftJoin' => 'Objects',
             'pattern' => '{{object.name}}',
@@ -106,7 +118,7 @@ class PaymentsTable extends Table
                 'uri' => [
                     'where' => [
                         'AND' => [
-                            'custom_type' => 5
+                            'label' => 'object'
                         ]
                     ]
                 ],
@@ -127,6 +139,37 @@ class PaymentsTable extends Table
                 'comment' => '<span>Обьект<br><sup class="grid_list__item sup">Object</sup></span>'
             ]
         ],
+        'client_id' => [
+            'leftJoin' => 'Clients',
+            'pattern' => '{{client.name}}',
+            'filter' => [
+                'modelName' => 'Clients',
+                'label' => 'Плательщик',
+                'elementType' => 'select',
+                'url' => '/contractors/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'AND' => [
+                            'type' => 'self',
+                           // "name LIKE" => '%{{value}}%'
+                        ]
+                    ]
+                ],
+                'hidden' => 0,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => '=',
+                'output_type' => 'select',
+                'operator_logical' => 'AND'
+            ],
+            'index' => [
+                'width' => '280px',
+                'display' => true
+            ],
+            'db_params' => [
+                'comment' => '<span>Плательщик<br><sup class="grid_list__item sup">Client</sup></span>'
+            ]
+        ],
         'contractor_id' => [
             'leftJoin' => 'Contractors',
             'pattern' => '{{contractor.name}}',
@@ -139,7 +182,7 @@ class PaymentsTable extends Table
                     'where' => [
                         'AND' => [
                             'model IN' => ['Companies', 'Entrepreneurs'],
-                            'type' => 'client',
+                            //'type' => 'client',
                             "name LIKE" => '%{{value}}%'
                         ]
                     ]
@@ -160,7 +203,7 @@ class PaymentsTable extends Table
             ]
         ],
         'bill_id' => [
-            'leftJoin' => 'Bills',
+            'leftJoin' => ['Bills' => ['FileOfBill']],
             'pattern' => '<span style="display: block;">
                 <a href="/store/bills/view/{{bill.id}}"><b>{{bill.number}}</b></a>
                 <br/> от {{bill.date|date("d/m/Y")}}
@@ -198,7 +241,7 @@ class PaymentsTable extends Table
         'percent_of_bill' => [
             'pattern' => '{{percent_of_bill}}',
             'index' => [
-                'width' => '60px',
+                'width' => '120px',
                 'display' => true
             ],
             'db_params' => [
@@ -412,6 +455,6 @@ class PaymentsTable extends Table
         ]
     ];
 
+    public $links = [];
 
-    
 }

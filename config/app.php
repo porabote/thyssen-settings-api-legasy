@@ -295,7 +295,7 @@ return [
             //'port' => 'non_standard_port_number',
             'username' => DB_USER,
             'password' => DB_PSW,
-            'database' => 'api',
+            'database' => 'api_default',
             //'encoding' => 'utf8mb4',
             'timezone' => 'UTC',
             'cacheMetadata' => true,

@@ -25,9 +25,15 @@ class BusinessRequestsTable extends Table
         ]);
 
         $this->belongsTo('Store.Bills', [
-            'foreignKey' => 'record_id',
-            'conditions' => ['BusinessRequests.className' => 'Store.Bills']
+            'foreignKey' => 'bill_id',
+         //   'conditions' => ['BusinessRequests.className' => 'Store.Bills']
 
+        ]);
+
+        $this->hasMany('Files', [
+            'foreignKey' => 'record_id',
+            'className' => 'Files',
+            'conditions' => [ 'model_alias' => 'App.BusinessRequests', 'flag' => 'on' ]
         ]);
 
         $this->belongsTo('Contractors');
@@ -61,11 +67,53 @@ class BusinessRequestsTable extends Table
             'leftJoin' => 'Statuses',
             'pattern' => '{{status.name}}',
             'index' => [
-                'width' => '260px',
+                'width' => '180px',
                 'show' => 1
             ],
             'db_params' => [
                 'comment' => 'Статус'
+            ]
+        ],
+        'bill_summa' => [
+            'leftJoin' => 'Bills',
+            'pattern' => '{{bill.summa|number_format(2,\'.\',\' \')}} {{bill.currency}}',
+            'index' => [
+                'width' => '160px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Сумма счета'
+            ]
+        ],
+        'summa' => [
+            'pattern' => '{{summa|number_format(2,\'.\',\' \')}} {{bill.currency}}',
+            'index' => [
+                'width' => '160px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Сумма запроса'
+            ]
+        ],
+        'summa_remain' => [
+            'leftJoin' => ['Bills' => ['Payments']],
+            'pattern' => '
+                <div>
+                {% set summa_amount = 0 %}
+
+                {% for payment in bill.payments %}
+                    <p>{{payment.summa|number_format(2,\'.\',\',\')}}</p>
+                    {% set summa_amount = summa_amount + payment.summa %}
+                {% endfor %} 
+                Оплачено : <b>{{summa_amount|number_format(2,\'.\',\' \')}} </b>       
+                </div> 
+            ',
+            'index' => [
+                'width' => '200px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Всего оплачено'
             ]
         ],
         'bill_id' => [
@@ -91,13 +139,13 @@ class BusinessRequestsTable extends Table
             ]
         ],
         'delta' => [
-            'pattern' => '{{delta}}',
+            'pattern' => '{{delta|number_format(2,\'.\',\' \')}} {{bill.currency}}',
             'index' => [
                 'width' => '140px',
                 'show' => 1
             ],
             'db_params' => [
-                'comment' => 'Дельта (РУБ)'
+                'comment' => 'Дельта'
             ]
         ],
         'acceptor_id' => [
@@ -111,6 +159,16 @@ class BusinessRequestsTable extends Table
                 'comment' => 'На подписи у'
             ]
         ],
+        'comment' => [
+            'pattern' => '{{comment}}',
+            'index' => [
+                'width' => '200px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'Комментарий'
+            ]
+        ]
     ];
 
 

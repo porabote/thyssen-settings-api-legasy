@@ -136,7 +136,16 @@ class PurchaseRequestTable extends Table
             ],
 	        'filter' => [
 		        'modelName' => 'Posts',
-	            'url' => '/posts/getFindList/',
+                'url' => '/api-users/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'OR' => [
+                            'name LIKE' => '%{{value}}%',
+                            'post_name LIKE' => '%{{value}}%'
+                        ]
+                    ],
+                    'pattern' => '{{name}} - {{post_name}}'
+                ],
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
@@ -177,7 +186,16 @@ class PurchaseRequestTable extends Table
 	        'cell-value' => '{{who_sign_queue_id.id}}',
 	        'filter' => [
 		        'modelName' => 'Posts',
-	            'url' => '/posts/getFindList/',
+                'url' => '/api-users/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'OR' => [
+                            'name LIKE' => '%{{value}}%',
+                            'post_name LIKE' => '%{{value}}%'
+                        ]
+                    ],
+                    'pattern' => '{{name}} - {{post_name}}'
+                ],
 				'hide' => 0,
 				'default_value' => null,
 				'show' => 1,
@@ -221,14 +239,28 @@ class PurchaseRequestTable extends Table
 		        'show' => 1
             ]
 	    ],
+        'psps' => [
+            'pattern' => '<span class="word-break">{{psps}}</span>',
+            'index' => [
+                'width' => '200px',
+                'show' => 1
+            ],
+            'db_params' => [
+                'comment' => 'PSPS'
+            ]
+        ],
 	    'nmcl_count' => [
 	        'index' => [
 		        'show' => 0
             ]
         ],
         'user_id' => [
-	        'index' => [
-	    	    'show' => 0
+            'leftJoin' => 'Users',
+            'pattern' => '<span class="post-info"><span class="post-fio">{{user.last_name}}</span> <span class="post-name">{{user.name}}</span></span>',
+            'cell-value' => '{{user_id}}',
+            'index' => [
+                'width' => '193px',
+                'show' => 0
             ]
         ]
     ];

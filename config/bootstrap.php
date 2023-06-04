@@ -199,9 +199,9 @@ Type::build('timestamp')
 //Inflector::rules('transliteration', ['/å/' => 'aa']);
 
 
-Plugin::load('Site', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
+//Plugin::load('Site', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Docs', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
-Plugin::load('Chat', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
+//Plugin::load('Chat', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Api', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Fias', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);
 Plugin::load('Acl', ['autoload' => true, 'bootstrap' => false, 'routes' => true]);

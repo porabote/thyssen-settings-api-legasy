@@ -1,0 +1,44 @@
+
+/* Область для загрузки файлов */
+
+.upload-area {
+  display: flex;
+  flex-flow: column nowrap;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #dfe5e7;
+  padding: 10px 20px;
+  color: #000;
+}
+
+.upload-area__icon {
+  font-size: 1.6rem;
+  padding: 0 10px 0 0;
+}
+
+.file-upload__input{
+  display: none;/* скрываем input file */
+}
+
+/* задаем стили кнопки выбора файла*/
+
+.file-upload__label {
+  position: flex;
+  color: #fff;
+  padding: 0;
+}
+
+/* Растягиваем label на всю область блока .file-upload */
+.file-upload__button {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background: #fddb54;
+  color: #000;
+  font-family: Helvetica, Sans-Serif;
+  padding: 10px 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}

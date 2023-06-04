@@ -45,7 +45,9 @@ trait ApiTrait
 	    
 	    $this->render(false);
 	    
-	    if(!$data['field_name'] || !$data['field_value']) return null;
+	    //if(!$data['field_name'] || !$data['field_value']) return null;
+        $data['field_name'] = $_GET['field_name'];
+        $data['field_value']= $_GET['field_value'];
 	    	    
 	    $modelName = $this->name;
 

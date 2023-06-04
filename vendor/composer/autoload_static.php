@@ -69,6 +69,7 @@ class ComposerStaticInit40e6206957095985b0d5d5d8f3da82d7
             'Porabote\\' => 9,
             'PhpParser\\' => 10,
             'Phinx\\' => 6,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
@@ -209,6 +210,10 @@ class ComposerStaticInit40e6206957095985b0d5d5d8f3da82d7
         'Phinx\\' => 
         array (
             0 => __DIR__ . '/..' . '/robmorgan/phinx/src/Phinx',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Migrations\\' => 
         array (

@@ -1,0 +1,74 @@
+.feed-list {
+  display: grid;
+  font-family: 'Roboto Light';
+  font-size: 13px;
+}
+.feed-list.head:hover { background: none; }
+.feed-list:hover > .feed-list__item { background: #eee; }
+.feed-list__head {
+  font-family: 'Roboto Medium';
+  font-size: 13px;
+  white-space: nowrap;
+  padding: 10px;
+}
+.feed-list-hover {
+  max-width: 100%;
+  overflow: scroll;
+}
+
+.feed-list__item {
+  padding: 10px;
+  border-bottom: 1px solid #f7f7f7;
+  max-height: 66px;
+  min-width: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.feed-list__item .word-break,
+.grid_list__item.word-break,
+.word-break {
+  word-break: break-all;
+}
+
+.feed-list__item .post-info {}
+.feed-list__item .post-fio, .feed-list__item .cell-item_name {
+  font-family: 'Roboto Medium';
+  display: block;
+}
+.feed-list__item .cell-item_bold {
+  font-family: 'Roboto Medium';
+}
+
+.cell-item_describe {
+  text-overflow: ellipsis;
+  overflow: visible;
+  max-height: 3000px;
+  height: 900px;
+  white-space: nowrap;
+}
+
+.feed-list__item .cell-info {}
+.feed-list__item .cell-item_title {
+  font-family: 'Roboto Medium';
+  display: block;
+}
+
+.grid_list__item.sup {
+  color: #737f8c;
+  padding-left: 0;
+}
+
+
+
+
+
+.feed-list__link {
+  font-family: 'Roboto Medium';
+  color: #1a1a1a;
+}
+.feed-list__link:hover {border-bottom: 1px solid #1a1a1a;}
+
+
+.mark-self { border-left: 3px solid #23a0f9; }
+.mark-sign { border-left: 3px solid #3bc444; }

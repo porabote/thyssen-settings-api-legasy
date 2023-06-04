@@ -58,7 +58,7 @@ class PurchasesTable extends Table
 
     public $contain_map = [
 	    'id' => [
-	        'pattern' => '<a href="/purchaseRequest/view/{{id}}/">{{id}}</a>',
+	        'pattern' => '<a href="/purchases/view/{{id}}/">{{id}}</a>',
 	        'index' => [
 		        'width' => '70px',
 		        'show' => 1
@@ -134,7 +134,7 @@ class PurchasesTable extends Table
 	    'drop_panel' => [
 		    [
 			    'title' => 'Просмотр',
-			    'href' => '/purchaseRequest/view/{{record.id}}/',
+			    'href' => '/purchases/view/{{record.id}}/',
 			    'class' => 'drop-button__hide-blok__link',
 			    'check' => false
 		    ]		    

@@ -14,7 +14,7 @@ class SettingsTable extends Table
 
     public function initialize(array $config)
     {
-	    $this->setTable('api.settings');
+	    $this->setTable('settings');
       //  $this->setPrimaryKey('className');
 
         $this->addBehavior('Timestamp', [

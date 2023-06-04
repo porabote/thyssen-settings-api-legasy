@@ -5,12 +5,12 @@ return [
         'Acl' => $baseDir . '/plugins/Acl/',
         'Api' => $baseDir . '/plugins/Api/',
         'Bake' => $baseDir . '/vendor/cakephp/bake/',
-        'Chat' => $baseDir . '/plugins/Chat/',
         'DebugKit' => $baseDir . '/vendor/cakephp/debug_kit/',
+        'Dictionaries' => $baseDir . '/plugins/Dictionaries/',
         'Docs' => $baseDir . '/plugins/Docs/',
         'Fias' => $baseDir . '/plugins/Fias/',
         'Migrations' => $baseDir . '/vendor/cakephp/migrations/',
-        'Site' => $baseDir . '/plugins/Site/',
+        'Store' => $baseDir . '/plugins/Store/',
         'WyriHaximus/TwigView' => $baseDir . '/vendor/wyrihaximus/twig-view/'
     ]
 ];

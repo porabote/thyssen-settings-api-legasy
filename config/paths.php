@@ -89,8 +89,8 @@ define('DOMAIN', 'porabote.com');
 define('SITE_NAME', 'Поработе');
 
 define('DB_HOST', '77.222.54.226');
-define('DB_USER', 'apiAdmin');
-define('DB_PSW', 'apiAdmin7893727');
+define('DB_USER', 'api');
+define('DB_PSW', 'dVh-Dpg-Sph-gL3');
 define('DB_PORT', '3306');
 
 

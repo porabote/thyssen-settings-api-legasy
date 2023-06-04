@@ -34,6 +34,9 @@ class BillsTable extends Table
             //'conditions' => [ 'PurchaseNomenclatures.parent_id IS NOT' => null ]
         ]);
 
+        $this->hasMany('Payments', [
+            'foreignKey' => 'bill_id'
+        ]);
 
         $this->hasMany('Files', [
             'foreignKey' => 'record_id',
@@ -41,6 +44,12 @@ class BillsTable extends Table
             'conditions' => [ 'model_alias' => 'Docs.ContractExtantions', 'flag' => 'on' ]
         ]);
 
+        $this->hasOne('FileOfBill', [
+            'foreignKey' => 'record_id',
+            'className' => 'Files',
+            'propertyName' => 'file_of_bill',
+            'conditions' => [ 'model_alias' => 'Store.Bills', 'Files.flag' => 'on', 'Files.label' => 'bill' ]
+        ]);
     }
 
     public $check_list = [
@@ -80,7 +89,12 @@ class BillsTable extends Table
             ]
 	    ],
 	    'number' => [
-            'pattern' => '<b>{{number}}</b><br> от {{date|date("d/m/Y")}}',
+            'leftJoin' => 'FileOfBill',
+            'pattern' => '
+                <b>{{number}}</b><br> от {{date|date("d/m/Y")}}<br>          
+                {% if file_of_bill is not empty %}
+                    <a target="blank" class="grid_list__icon link-arrow-blank left" href="{{file_of_bill.uri}}">Файл счета</a>
+                {% endif %}',
             'cell-value' => '{{id}}',
             'filter' => [
                 'elementType' => 'input',
@@ -92,7 +106,7 @@ class BillsTable extends Table
                 'operator_logical' => 'AND'
             ],
             'index' => [
-	            'width' => '180px',
+	            'width' => '220px',
 	            'display' => true
             ],
             'db_params' => [
@@ -142,12 +156,50 @@ class BillsTable extends Table
             ]
 	    ],
 	    'summa' => [
-            'pattern' => '{{summa}}',//{%  if currency != "RUR" %} {{summa}} EUR {% else %} {{summa}}RUR {% endif; %}
+            'pattern' => '{{summa|number_format(2, \'.\', \' \')}}',//{%  if currency != "RUR" %} {{summa}} EUR {% else %} {{summa}}RUR {% endif; %}
             'index' => [
 	            'width' => '120px',
 	            'display' => true
             ]
 	    ],
+        'nds_percent' => [
+            'pattern' => '{{nds_percent}} %',
+            'label' => 'НДС %',
+            'index' => [
+                'width' => '120px',
+                'display' => true,
+                'show' => true,
+                'label' => 'НДС %',
+            ],
+            'db_params' => [
+                'comment' => 'НДС %',
+            ]
+        ],
+        'purchase_id' => [
+            'leftJoin' => 'Payments',
+            'pattern' => '
+            {% set remain = 0 %}
+            {% set summa_remain = summa %}
+            {% set remain_statuses = [50, 56] %}
+            
+            {% for payment in payments %}
+                {% if payment.status_id in remain_statuses %}
+                    {% set summa_remain = summa_remain - payment.summa %}
+                {% endif %}                                
+            {% endfor %}
+                <p style="white-space: nowrap;">{{summa_remain|number_format(2, \'.\', \' \')}}</p>
+            ',
+            'filter' => [
+                'label' => 'Остаток',
+            ],
+            'index' => [
+                'width' => '120px',
+                'display' => true
+            ],
+            'db_params' => [
+                'comment' => 'Остаток',
+            ]
+        ],
 	    'currency' => [
             'pattern' => '{{currency}}',
             'index' => [
@@ -155,6 +207,36 @@ class BillsTable extends Table
 	            'display' => true
             ]
 	    ],
+        'who_sign_queue_id' => [
+            'leftJoin' => 'WhoSignQueue',
+            'pattern' => '<span class="post-info"><span class="post-fio">{{who_sign_queue.fio}}</span> <span class="post-name">{{who_sign_queue.name}}</span></span>',
+            //'cell-value' => '{{who_sign_queue.id}}',
+            'filter' => [
+                'modelName' => 'Posts',
+                'label' => 'На подписи у',
+                'elementType' => 'select',
+                'url' => '/api-users/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'OR' => [
+                            'name LIKE' => '%{{value}}%',
+                            'post_name LIKE' => '%{{value}}%'
+                        ]
+                    ],
+                    'pattern' => '{{name}} - {{post_name}}'
+                ],
+                'hidden' => 0,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => '=',
+                'output_type' => 'select',
+                'operator_logical' => 'AND'
+            ],
+            'index' => [
+                'width' => '220px',
+                'display' => true
+            ]
+        ],
 	    'date_to' => [
             'pattern' => '{{date_to|date("d/m/Y")}}',
             'index' => [
@@ -188,13 +270,13 @@ class BillsTable extends Table
                 ]
 	        ]
 	    ],
-	    'pay_plan' => [
-            'pattern' => '{{pay_plan}}',
-            'index' => [
-	            'width' => '110px',
-	            'display' => true
-            ]
-	    ],
+//	    'pay_plan' => [
+//            'pattern' => '{{pay_plan}}',
+//            'index' => [
+//	            'width' => '110px',
+//	            'display' => true
+//            ]
+//	    ],
 	    'pay_plan' => [
             'pattern' => '{{pay_plan}}',
             'index' => [
@@ -213,7 +295,7 @@ class BillsTable extends Table
 	            'uri' => [
 	                'where' => [
                         'AND' => [
-                            'custom_type' => 5
+                            'label' => 'object',
                         ]
                     ]
                 ],
@@ -231,36 +313,6 @@ class BillsTable extends Table
 	              'display' => true
             ]
 	    ],
-	    'who_sign_queue_id' => [
-		    'leftJoin' => 'WhoSignQueue',
-	        'pattern' => '<span class="post-info"><span class="post-fio">{{who_sign_queue.fio}}</span> <span class="post-name">{{who_sign_queue.name}}</span></span>',
-	        //'cell-value' => '{{who_sign_queue.id}}',
-	        'filter' => [
-		        'modelName' => 'Posts',
-                'label' => 'На подписи у',
-                'elementType' => 'select',
-	            'url' => '/posts/getAjaxList/',
-                'uri' => [
-                    'where' => [
-                        'OR' => [
-                            'name LIKE' => '%{{value}}%',
-                            'fio LIKE' => '%{{value}}%'
-                        ]
-                    ],
-                    'pattern' => '{{fio}} - {{name}}'
-                ],
-				'hidden' => 0,
-				'defaultValue' => null,
-				'display' => true,
-				'operator' => '=',
-				'output_type' => 'select',
-				'operator_logical' => 'AND'
-	        ],
-	        'index' => [
-		        'width' => '220px',
-		        'display' => true
-            ]
-	    ],
         'manager_id' => [
 	    	'leftJoin' => 'Managers',
             'pattern' => '<span class="post-info"><span class="post-fio">{{manager.fio}}</span> <span class="post-name">{{manager.name}}</span></span>',
@@ -268,15 +320,15 @@ class BillsTable extends Table
 	    	    'modelName' => 'Posts',
                 'elementType' => 'select',
                 'label' => 'Добавил',
-	            'url' => '/posts/getAjaxList/',
+	            'url' => '/api-users/getAjaxList/',
                 'uri' => [
                     'where' => [
                         'OR' => [
                             'name LIKE' => '%{{value}}%',
-                            'fio LIKE' => '%{{value}}%'
+                            'post_name LIKE' => '%{{value}}%'
                         ]
                     ],
-                    'pattern' => '{{fio}} - {{name}}'
+                    'pattern' => '{{name}} - {{post_name}}'
                 ],
 				'hidden' => 0,
 				'defaultValue' => null,
@@ -306,9 +358,8 @@ class BillsTable extends Table
 	            'url' => '/contractors/getAjaxList/',
                 'uri' => [
                     'where' => [
-                        'OR' => [
+                        'AND' => [
                             'type' => 'self',
-                            'c_id >=' => '1',
                             "name LIKE" => '%{{value}}%'
                         ]
                     ]
@@ -340,11 +391,11 @@ class BillsTable extends Table
                 'comment' => 'Алиас на латинице'
             ]
 	    ],
-	    'purchase_id' => [
-		    'index' => [
-                'show' => 0
-		    ]
-	    ],
+//	    'purchase_id' => [
+//		    'index' => [
+//                'show' => 0
+//		    ]
+//	    ],
 
     ];
 

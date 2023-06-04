@@ -1,0 +1,55 @@
+/* Верхний фильтр.. */
+.filter_top {
+  display: flex;
+  align_content: center;
+  align_items: center;
+}
+/* Верхний фильтр.. */
+/* Поле быстрого общего поиска */
+.fast-find__wrap {
+  padding: 10px 0px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-content: start;
+  align-items: start;
+}
+.fast-find__item {
+  width: 100%;
+  border: 1px solid #cccccc;
+  display: grid;
+  grid-template-columns: 3fr fit-content(100px) fit-content(20px);
+}
+
+.fast-find__item__buttons {
+  border: 1px solid red;
+}
+
+.fast-find__item__thumbler {
+  width: 40px;
+  background-image: url('./svg/more-v__grey.svg');
+  background-size: 18px;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  cursor: pointer;
+  position: relative;
+}
+.fast-find__item__thumbler:hover {
+  background-image: url('./svg/more-v.svg');
+}
+
+.fast-find__item__input {
+  border: 0;
+  padding: 0px 10px 0 15px;
+  border-radius: 0px;
+  font-size: 0.8rem;
+  line-height: 15px;
+  height: 31px;
+  transition: 0.2s;
+}
+
+
+.fast-find__item__input:focus {
+
+}
+/* .. поле быстрого общего поиска */

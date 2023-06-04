@@ -1,0 +1,1062 @@
+.header {
+  grid-area: header;
+  box-shadow: inset 0 -1px 0 rgb(230 230 230);
+  padding: 0 20px;
+  background: #fff;
+  max-height: 85px;
+}
+
+.header-panel {
+  display: grid;
+  grid-area: header;
+  grid-template-areas:
+      "head-logo head-profile"
+      "head-nav head-nav";
+  grid-template-columns: 1fr 150px;
+  min-height: 84px;
+  box-shadow: inset 0 -1px 0 #f8f8f8;
+}
+
+// ...Верхняя панель
+
+
+// Меню верхнее
+.header-panel__nav {
+  grid-area: head-nav;
+  display: flex;
+  position: relative;
+  height: inherit; // обязательный параметр
+  box-sizing: content-box; // что бы был виден бордер
+  padding-left: 20px;
+  padding-right: 30px;
+  min-height: 30px;
+}
+.navbar-horizontal {
+  display: flex;
+  height: inherit;// navbar size (height), высота должна обязательно быть задана, может наследоваться
+  flex-flow: row nowrap;
+}
+
+.navbar-horizontal__item {
+  display: flex;// not edit
+  position: relative;// not edit
+  box-sizing: border-box;// not edit
+  height: inherit;// not edit
+  align-items: center;// выравнивание основного меню по вертикали
+  margin: 0px 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  white-space: nowrap;
+  will-change: color, transform;
+}
+.navbar-horizontal__item__icon {
+  width: 16px;
+  height: 16px;
+  background-image: url('./svg/down-arrow.svg');
+  background-position: 50%;
+  background-repeat:  no-repeat;
+  background-size: 10px;
+}
+
+.navbar-horizontal__item:hover > span:only-of-type {
+  transform: rotate(-180deg);
+  color: #2ed3ae;
+}
+
+.navbar-horizontal__item__link {
+  font-size: 14px;
+  color: #000;
+  font-family: 'Roboto Regular';
+  letter-spacing: 0.5px;
+  color: #3a3a3a;
+}
+
+.navbar-horizontal__item:hover .navbar-horizontal__item__link {
+  color: #2ed3ae;
+}
+
+.navbar-horizontal__item:hover > .navbar-vertical  {
+  display: block;
+}
+
+.navbar-horizontal__item_coner {
+  font-size: 16px;
+  color: #000;
+  transform: rotate(90deg);
+  transition: 0.3s;
+  will-change: color, transform;
+}
+
+// То что не влезло в основное меню из за разрешения экрана
+.navbar-horizontal__extended {
+  display: none;
+  background-image: url('./svg/navbar-horizontal__extended.svg');
+  background-repeat: no-repeat;
+  background-size: 16px;
+  background-position: 50%;
+  width: 50px;
+  cursor: pointer;
+}
+.navbar-horizontal__extended__items {
+  display: none;
+  position: absolute;
+  padding: 10px 0;
+  top: 90%;
+  right: 0px;
+  min-width: 200px;
+  background: #fff;
+  padding-bottom: 14px;
+}
+.navbar-horizontal__extended__items__item {
+  color: #000;
+  display: block;
+  transition: 0.3s;
+  will-change: color;
+  font-size: 13px;
+  padding-bottom: 3px;
+  padding: 10px 15px 4px 20px;
+  cursor: pointer;
+}
+.navbar-horizontal__extended:hover .navbar-horizontal__extended__items { display: block; }
+
+
+// ------Вертикальное меню--------
+.navbar-vertical {
+  display: flex;// not edit
+  display: none;// not edit
+  flex-direction: column;// not edit
+  position: absolute;// not edit
+  top: 100%;// not edit
+  left: 0;// not edit
+  box-sizing: inherit;// not edit
+  background-clip: content-box;// not edit
+  padding-top: 5px; // отступ от родителя-
+  align-items: center;
+  margin-top: -1px;
+}
+
+.navbar-vertical__item {
+  display: flex;// not edit
+  flex-basis: content;// not edit
+  flex-wrap: nowrap;// not edit
+  white-space: nowrap;// not edit
+  position: relative;// not edit
+  box-sizing: inherit;
+  align-items: center;
+  min-width: 170px;
+  background-color: #fdfdfd;
+  transition: 0.3s;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding: 0px 30px;
+  color: #000;
+  padding-top: 18px;
+}
+
+.navbar-vertical__item:first-child {
+  border-top: 0.3px solid #f3f3f3;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding-top: 18px;
+}
+.navbar-vertical__item:last-child {
+  border-bottom: 0.3px solid #f3f3f3;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding-bottom: 15px;
+}
+
+.navbar-vertical__item:hover > i:only-of-type {
+  color: #2ed3ae;
+}
+
+.navbar-vertical__item:hover > a:only-of-type {
+  color: #2ed3ae;
+}
+
+.navbar-vertical__item__link {
+  color: #000;
+  display: block;
+  transition: 0.3s;
+  will-change: color;
+  font-size: 13px;
+  padding-bottom: 3px;
+}
+// -----меню ul 3его уровня, переопределяем navbar-vertical------добавляем в класс родительского li
+
+.navbar-vertical__item:hover > .navbar-vertical_level {
+  display: block;
+  left: 100%;// not edit
+  top: 0;// not edit
+  padding: 0;// not edit
+  padding-left: 5px; // отступ от родителя-
+}
+
+
+// ...Меню верхнее
+
+
+
+// Иконки в верхней панели
+.header-panel__icons-set {
+  grid-area: head-icons;
+  display: none;
+  justify-content: flex-end;
+
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 0px 30px 0 15px;
+  border-right: 0px solid #f1f2f8;
+  border-left: 0px solid #f1f2f8;
+}
+.header-panel__icons-set__item__link {
+  position: relative;
+  top: 5px;
+  color: rgba(130, 130, 130, 1);
+  transition: 0.3s;
+  font-weight: 300;
+  padding: 10px 6px;
+  cursor: pointer;
+}
+.header-panel__icons-set__item__link:hover {
+}
+.header-panel__icons-set__item__link:hover .header-panel__icons-set__item__link_img {
+  color: #fff;
+  transform: scaleX(-1);
+  transition: 0.3s;
+}
+.header-panel__icons-set__item__link_img {
+  color: #2fd4b1;
+  padding-bottom: 3px;
+  padding-top: 2px;
+  display: block;
+  text-align: center;
+  will-change: all;
+  font-size: 1.3rem;
+}
+
+.header-panel__icons-set__item__link_text {
+  font-family: 'Roboto Regular';
+  font-size: 12px;
+  text-align: center;
+  display: block;
+  text-transform: lowercase;
+}
+
+.header-panel__icons-set__item__link_text { background-position: 50% 2px;background-repeat: no-repeat; }
+.header-panel__icons-set__item__link_text.chat { background-image: url('./svg/speech-bubble__blue.svg'); background-size: 22px; padding: 26px 0 2px 0px;width: 39px; color: #666;}
+.header-panel__icons-set__item__link_text.chat:hover { background-image: url('./svg/speech-bubble__blue.svg');}
+
+.header-panel__icons-set__item__link_text.alarm_clock { background-image: url('./svg/alarm-clock.svg'); background-size: 22px; padding: 26px 0 2px 0;width: 36px; color: #666; }
+.header-panel__icons-set__item__link_text.alarm_clock:hover { background-image: url('./svg/alarm-clock__blue.svg'); }
+
+.header-panel__icons-set__item__link_text.notification { background-image: url('./svg/bell.svg'); background-size: 24px; padding: 26px 0 2px 0;width: 40px; }
+
+.header-panel__icons-set__item__link .count {
+  position: absolute;
+  top: 6px;
+  right: -6px;
+}
+
+// ...Иконки в верхней панели
+
+
+// Панель настроек..
+
+.tools {
+  display: flex;
+  flex-flow: row nowrap;
+  align-content: center;align-items: center;justify-content: center;
+  border-bottom: 1px dashed #eeeeee;
+}
+.tools__item {
+  padding: 15px 5px;
+}
+.tools__item__icon {
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50%;
+  cursor: pointer;
+}
+
+// ..Панель настроек
+
+
+// Профайл в верхней панели
+.header-panel__profile {
+  grid-area: head-profile;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+.header-panel__profile__data {
+  display: none;
+  text-align: right;
+  padding: 0 10px 0 10px;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.header-panel__profile__data__fio {
+  white-space: nowrap;
+  font-size: 13px;
+  font-family: 'Roboto Regular';
+  color: #bdbdbd;
+  padding-top: 8px;
+  line-height: 12px;
+}
+
+.header-panel__profile__data__rights {
+  white-space: nowrap;
+  font-size: 12px;
+  color: #535356;
+}
+
+.header-panel__profile__photo {
+  height: 40px;
+  width: 40px;
+  background-size: cover;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-image: url('./svg/register_user.svg');
+  background-size: 25px;
+}
+
+.header-panel__profile__icon-menu {
+  font-size: 18px;
+  color: #616161;
+  transition: 0.3s;
+  padding-left: 10px;
+}
+
+.header-panel__profile:hover .header-panel__profile__data__rights {
+  color: rgba(104, 114, 135, 1);
+}
+.header-panel__profile__data__rights__selected {
+  color: rgba(104, 114, 135, 1);
+}
+
+
+
+.header-panel__profile__dropdown {
+  position: absolute;
+  left: 0px;
+  top: 120%;
+  width: 100%;
+  background-color: rgba(252, 253, 255, 1);
+  border: 1px solid rgba(84, 103, 147, 0.2);
+  border-top-color: transparent;
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  will-change: opacity, visibility;
+}
+.header-panel__profile__dropdown__list {
+  padding: 20px 25px;
+
+}
+.header-panel__profile__dropdown__list__item {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.header-panel__profile__dropdown__list__item > i {
+  font-size: 18px;
+  padding-right: 10px;
+  color: #e6e6e6;
+}
+.header-panel__profile__dropdown__item__link {
+  font-size: 13px;
+  color: #555555;
+  letter-spacing: 0.8px;
+  transition: 0.3s;
+}
+.header-panel__profile__dropdown__list__line {
+  height: 0.3px;
+  width: 100%;
+}
+
+.header-panel__profile__dropdown__list__item:hover .header-panel__profile__dropdown__item__link {
+  color: rgba(31, 51, 95, 1);
+}
+.header-panel__profile__dropdown__list__item:hover .header-panel__profile__dropdown__list__item__icon {
+  color: rgba(31, 51, 95, 0.5);
+}
+
+.header-panel__profile__dropdown__selected {
+  opacity: 1;
+  visibility: visible;
+  top: 100%;
+}
+
+.header-panel__profile__dropdown__list__item__stat_mail {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: rgba(47, 212, 177, 0.8);
+  font-size: 12px;
+  text-align: center;
+  padding: 2px 5px;
+  margin-top: -2.5px;
+  font-family: 'Roboto Bold';
+  color: #fff;
+  border-radius: 2px;
+}
+
+.header-panel__nav-left {
+  display: none;
+}
+// ...Профайл в верхней панели
+
+.header__panel__auth {
+  display: flex;
+  flex-flow: row;
+}
+
+.header__panel__auth__link {
+  font-family: 'Roboto Medium';
+  display: flex;
+  line-height: 29px;
+  font-size: 14px;
+  padding: 10px;
+
+  align-items: center;
+  color: #3C3733;
+}
+
+
+// Верхняя панель
+.header-panel {
+  display: grid;
+  grid-template-areas:
+      "head-logo head-profile"
+      "head-nav head-nav";
+  grid-template-columns: 1fr 150px;
+  min-height: 84px;
+}
+
+// ...Верхняя панель
+
+
+
+// Логотип
+
+.header-panel__logo {
+  grid-area: head-logo;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-right: 0;
+  background-image: url('./svg/logo.svg');
+  background-repeat: no-repeat;
+  background-size: 34px;
+  background-position: 40px 50%;
+  padding: 36px 20px;
+}
+// ...Логотип
+
+
+
+// Меню верхнее
+.header-panel__nav {
+  grid-area: head-nav;
+  display: flex;
+  position: relative;
+  height: inherit; // обязательный параметр
+  box-sizing: content-box; // что бы был виден бордер
+  padding-left: 20px;
+  padding-right: 30px;
+  min-height: 30px;
+}
+.navbar-horizontal {
+  display: flex;
+  height: inherit;// navbar size (height), высота должна обязательно быть задана, может наследоваться
+  flex-flow: row nowrap;
+}
+
+.navbar-horizontal__item {
+  display: flex;// not edit
+  position: relative;// not edit
+  box-sizing: border-box;// not edit
+  height: inherit;// not edit
+  align-items: center;// выравнивание основного меню по вертикали
+  margin: 0px 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  white-space: nowrap;
+  will-change: color, transform;
+}
+.navbar-horizontal__item__icon {
+  width: 16px;
+  height: 16px;
+  background-image: url('./svg/down-arrow.svg');
+  background-position: 50%;
+  background-repeat:  no-repeat;
+  background-size: 10px;
+}
+
+.navbar-horizontal__item:hover > span:only-of-type {
+  transform: rotate(-180deg);
+  color: #2ed3ae;
+}
+
+.navbar-horizontal__item__link {
+  font-size: 14px;
+  color: #000;
+  font-family: 'Roboto Regular';
+  letter-spacing: 0.5px;
+  color: #3a3a3a;
+}
+
+.navbar-horizontal__item:hover .navbar-horizontal__item__link {
+  color: #2ed3ae;
+}
+
+.navbar-horizontal__item:hover > .navbar-vertical  {
+  display: block;
+}
+
+.navbar-horizontal__item__link.active {
+  border-bottom: 2px solid #000;
+
+}
+
+
+.navbar-horizontal__item_coner {
+  font-size: 16px;
+  color: #000;
+  transform: rotate(90deg);
+  transition: 0.3s;
+  will-change: color, transform;
+}
+
+// То что не влезло в основное меню из за разрешения экрана
+.navbar-horizontal__extended {
+  display: none;
+  background-image: url('./svg/navbar-horizontal__extended.svg');
+  background-repeat: no-repeat;
+  background-size: 16px;
+  background-position: 50%;
+  width: 50px;
+  cursor: pointer;
+}
+.navbar-horizontal__extended__items {
+  display: none;
+  position: absolute;
+  padding: 10px 0;
+  top: 90%;
+  right: 0px;
+  min-width: 200px;
+  background: #fff;
+  padding-bottom: 14px;
+}
+.navbar-horizontal__extended__items__item {
+  color: #000;
+  display: block;
+  transition: 0.3s;
+  will-change: color;
+  font-size: 13px;
+  padding-bottom: 3px;
+  padding: 10px 15px 4px 20px;
+  cursor: pointer;
+}
+.navbar-horizontal__extended:hover .navbar-horizontal__extended__items { display: block; }
+
+
+// -----Вертикальное меню--------
+.navbar-vertical {
+  display: flex;// not edit
+  display: none;// not edit
+  flex-direction: column;// not edit
+  position: absolute;// not edit
+  top: 100%;// not edit
+  left: 0;// not edit
+  box-sizing: inherit;// not edit
+  background-clip: content-box;// not edit
+  padding-top: 5px; // отступ от родителя-
+  align-items: center;
+  margin-top: -1px;
+}
+
+.navbar-vertical__item {
+  display: flex;// not edit
+  flex-basis: content;// not edit
+  flex-wrap: nowrap;// not edit
+  white-space: nowrap;// not edit
+  position: relative;// not edit
+  box-sizing: inherit;
+  align-items: center;
+  min-width: 170px;
+  background-color: #fdfdfd;
+  transition: 0.3s;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding: 0px 30px;
+  color: #000;
+  padding-top: 18px;
+}
+
+.navbar-vertical__item:first-child {
+  border-top: 0.3px solid #f3f3f3;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding-top: 18px;
+}
+.navbar-vertical__item:last-child {
+  border-bottom: 0.3px solid #f3f3f3;
+  border-left: 0.3px solid #f3f3f3;
+  border-right: 0.3px solid #f3f3f3;
+  padding-bottom: 15px;
+}
+
+.navbar-vertical__item:hover > i:only-of-type {
+  color: #2ed3ae;
+}
+
+.navbar-vertical__item:hover > a:only-of-type {
+  color: #2ed3ae;
+}
+
+.navbar-vertical__item__link {
+  color: #000;
+  display: block;
+  transition: 0.3s;
+  will-change: color;
+  font-size: 13px;
+  padding-bottom: 3px;
+}
+// -----меню ul 3его уровня, переопределяем navbar-vertical------добавляем в класс родительского li
+
+.navbar-vertical__item:hover > .navbar-vertical_level {
+  display: block;
+  left: 100%;// not edit
+  top: 0;// not edit
+  padding: 0;// not edit
+  padding-left: 5px; // отступ от родителя-
+}
+
+
+// ...Меню верхнее
+
+
+
+// Иконки в верхней панели
+.header-panel__icons-set {
+  grid-area: head-icons;
+  display: none;
+  justify-content: flex-end;
+
+  flex-wrap: nowrap;
+  align-items: center;
+  padding: 0px 30px 0 15px;
+  border-right: 0px solid #f1f2f8;
+  border-left: 0px solid #f1f2f8;
+}
+.header-panel__icons-set__item__link {
+  position: relative;
+  top: 5px;
+  color: rgba(130, 130, 130, 1);
+  transition: 0.3s;
+  font-weight: 300;
+  padding: 10px 6px;
+  cursor: pointer;
+}
+.header-panel__icons-set__item__link:hover {
+}
+.header-panel__icons-set__item__link:hover .header-panel__icons-set__item__link_img {
+  color: #fff;
+  transform: scaleX(-1);
+  transition: 0.3s;
+}
+.header-panel__icons-set__item__link_img {
+  color: #2fd4b1;
+  padding-bottom: 3px;
+  padding-top: 2px;
+  display: block;
+  text-align: center;
+  will-change: all;
+  font-size: 1.3rem;
+}
+
+.header-panel__icons-set__item__link_text {
+  font-family: 'Roboto Regular';
+  font-size: 12px;
+  text-align: center;
+  display: block;
+  text-transform: lowercase;
+}
+
+.header-panel__icons-set__item__link_text { background-position: 50% 2px;background-repeat: no-repeat; }
+.header-panel__icons-set__item__link_text.chat { background-image: url('./svg/speech-bubble.svg'); background-size: 22px; padding: 26px 0 2px 0px;width: 39px; color: #666;}
+.header-panel__icons-set__item__link_text.chat:hover { background-image: url('./svg/speech-bubble__blue.svg');}
+
+.header-panel__icons-set__item__link_text.alarm_clock { background-image: url('./svg/alarm-clock.svg'); background-size: 22px; padding: 26px 0 2px 0;width: 36px; color: #666; }
+.header-panel__icons-set__item__link_text.alarm_clock:hover { background-image: url('./svg/alarm-clock__blue.svg'); }
+
+.header-panel__icons-set__item__link_text.notification { background-image: url('./svg/bell.svg'); background-size: 24px; padding: 26px 0 2px 0;width: 40px; }
+
+.header-panel__icons-set__item__link .count {
+  position: absolute;
+  top: 6px;
+  right: -6px;
+}
+
+// ...Иконки в верхней панели
+
+
+// Панель настроек..
+
+.tools {
+  display: flex;
+  flex-flow: row nowrap;
+  align-content: center;align-items: center;justify-content: center;
+  border-bottom: 1px dashed #eeeeee;
+}
+.tools__item {
+  padding: 15px 5px;
+}
+.tools__item__icon {
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50%;
+  cursor: pointer;
+}
+
+.tools__item__icon.set_scalar_view { background-image: url('./svg/tools__set_scalar_view__grey.svg'); }
+.tools__item__icon.set_scalar_view:hover { background-image: url('./svg/tools__set_scalar_view__black.svg'); }
+.tools__item__icon.set_scalar_view.active { background-image: url('./svg/tools__set_scalar_view__blue.svg'); }
+
+.tools__item__icon.set_grid_view { background-image: url('./svg/tools__set_grid_view__grey.svg'); }
+.tools__item__icon.set_grid_view:hover { background-image: url('./svg/tools__set_grid_view__black.svg'); }
+.tools__item__icon.set_grid_view.active { background-image: url('./svg/tools__set_grid_view__blue.svg'); }
+
+// ..Панель настроек
+
+
+// Профайл в верхней панели
+.header-panel__profile {
+  grid-area: head-profile;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+.header-panel__profile__data {
+  display: none;
+  text-align: right;
+  padding: 0 10px 0 10px;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.header-panel__profile__data__fio {
+  white-space: nowrap;
+  font-size: 13px;
+  font-family: 'Roboto Regular';
+  color: #bdbdbd;
+  padding-top: 8px;
+  line-height: 12px;
+}
+
+.header-panel__profile__data__rights {
+  white-space: nowrap;
+  font-size: 12px;
+  color: #535356;
+}
+
+.header-panel__profile__photo {
+  height: 40px;
+  width: 40px;
+  background-size: cover;
+  border-radius: 50%;
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-image: url('./svg/register_user.svg');
+  background-size: 25px;
+}
+
+.header-panel__profile__icon-menu {
+  font-size: 18px;
+  color: #616161;
+  transition: 0.3s;
+  padding-left: 10px;
+}
+
+.header-panel__profile:hover .header-panel__profile__data__rights {
+  color: rgba(104, 114, 135, 1);
+}
+.header-panel__profile__data__rights__selected {
+  color: rgba(104, 114, 135, 1);
+}
+
+
+
+.header-panel__profile__dropdown {
+  position: absolute;
+  left: 0px;
+  top: 120%;
+  width: 100%;
+  background-color: rgba(252, 253, 255, 1);
+  border: 1px solid rgba(84, 103, 147, 0.2);
+  border-top-color: transparent;
+  cursor: default;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  will-change: opacity, visibility;
+}
+.header-panel__profile__dropdown__list {
+  padding: 20px 25px;
+
+}
+.header-panel__profile__dropdown__list__item {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.header-panel__profile__dropdown__list__item > i {
+  font-size: 18px;
+  padding-right: 10px;
+  color: #e6e6e6;
+}
+.header-panel__profile__dropdown__item__link {
+  font-size: 13px;
+  color: #555555;
+  letter-spacing: 0.8px;
+  transition: 0.3s;
+}
+.header-panel__profile__dropdown__list__line {
+  height: 0.3px;
+  width: 100%;
+}
+
+.header-panel__profile__dropdown__list__item:hover .header-panel__profile__dropdown__item__link {
+  color: rgba(31, 51, 95, 1);
+}
+.header-panel__profile__dropdown__list__item:hover .header-panel__profile__dropdown__list__item__icon {
+  color: rgba(31, 51, 95, 0.5);
+}
+
+.header-panel__profile__dropdown__selected {
+  opacity: 1;
+  visibility: visible;
+  top: 100%;
+}
+
+.header-panel__profile__dropdown__list__item__stat_mail {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background-color: rgba(47, 212, 177, 0.8);
+  font-size: 12px;
+  text-align: center;
+  padding: 2px 5px;
+  margin-top: -2.5px;
+  font-family: 'Roboto Bold';
+  color: #fff;
+  border-radius: 2px;
+}
+
+.header-panel__nav-left {
+  display: none;
+}
+// ...Профайл в верхней панели
+
+// MEDIA
+
+@media only screen and (min-width: 375px) {
+
+  .header-panel {
+    grid-template-columns: 1fr 1fr 90px;
+    grid-template-areas:
+          "head-logo head-icons head-profile"
+          "head-nav head-nav head-nav";
+  }
+
+  .header-panel__icons-set {display: flex;}
+}
+
+@media only screen and (min-width: 768px) {
+
+
+  .header-panel {
+    grid-template-columns: 1fr 1fr 230px;
+    grid-template-areas:
+          "head-logo head-icons head-profile"
+          "head-nav head-nav head-nav";
+  }
+
+  .header-panel__profile {
+    order: 3;
+    justify-content: flex-end;
+    flex-grow: 0;
+    flex-basis: 10vw;
+    padding: 11px 15px;
+  }
+
+  .header-panel__profile .header-panel__profile__data {
+    display: flex;
+  }
+
+
+
+
+  .on-widgets {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 400px 1fr 400px;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    font-family: 'Museo Regular';
+    font-size: 14px;
+    padding-bottom: 10px;
+    margin: 0;
+  }
+
+  .on-widget {
+    background: #fff;
+    width: auto;
+    border-radius: 3px;
+    border: 0px solid #F5F5F5;
+    padding: 50px 50px 60px 50px;
+    -webkit-box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+    -moz-box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+    box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+  }
+
+
+}
+
+
+@media only screen and (min-width: 1280px) {
+  .header-panel {
+    grid-template-columns: 140px 3fr 170px 230px;
+    grid-template-areas:
+          "head-logo head-nav head-icons head-profile";
+  }
+
+  .main-page {
+    padding: 60px 50px;
+  }
+  .header-panel__nav {
+    padding-left: 0px;
+  }
+
+}
+
+//  ..MEDIA
+// MEDIA
+@media only screen and (min-width: 375px) {
+}
+@media only screen and (min-width: 768px) {
+
+  .form-fieldset {
+    display: grid;
+  }
+
+  .form-fieldset .form-item {
+    padding-left: 10px;
+  }
+
+  .form-fieldset .form-item.no_padding {
+    padding-left: 0px;
+  }
+
+}
+@media only screen and (min-width: 1020px) {
+}
+@media only screen and (min-width: 1280px) {
+}
+
+//  ..MEDIA
+// MEDIA
+
+@media only screen and (min-width: 768px) {
+
+
+  .header-panel {
+    grid-template-columns: 1fr 1fr 230px;
+    grid-template-areas:
+          "head-logo head-icons head-profile"
+          "head-nav head-nav head-nav";
+  }
+
+  .header-panel__profile {
+    order: 3;
+    justify-content: flex-end;
+    flex-grow: 0;
+    flex-basis: 10vw;
+    padding: 11px 15px;
+  }
+
+  .header-panel__profile .header-panel__profile__data {
+    display: flex;
+  }
+
+
+
+
+  .on-widgets {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 400px 1fr 400px;
+    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    font-family: 'Museo Regular';
+    font-size: 14px;
+    padding-bottom: 10px;
+    margin: 0;
+  }
+
+  .on-widget {
+    background: #fff;
+    width: auto;
+    border-radius: 3px;
+    border: 0px solid #F5F5F5;
+    padding: 50px 50px 60px 50px;
+    -webkit-box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+    -moz-box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+    box-shadow: 2px 2px 3px 2px rgba(189,189,189,0.25);
+  }
+
+
+}
+
+
+@media only screen and (min-width: 1020px) {
+
+  .header-panel {
+    padding: 0px 0px;
+  }
+
+}
+
+
+@media only screen and (min-width: 1280px) {
+  .header-panel {
+    grid-template-columns: 140px 3fr 170px 230px;
+    grid-template-areas:
+          "head-logo head-nav head-icons head-profile";
+  }
+
+  .header-panel__nav {
+    padding-left: 0px;
+  }
+
+}
+
+@media only screen and (min-width: 1020px) {
+}
+@media only screen and (min-width: 1280px) {
+}
+
+//  ..MEDIA

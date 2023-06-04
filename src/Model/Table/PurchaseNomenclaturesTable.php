@@ -1,41 +1,42 @@
 <?php
+
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-class PurchaseNomenclaturesTable extends Table 
+class PurchaseNomenclaturesTable extends Table
 {
 
     public function initialize(array $config)
     {
-/*
-        $this->addBehavior('CounterCache', [
-            'PurchaseRequest' => ['nmcl_count', [
-	            'conditions' => ['Files.flag' => 'on']
-            ]]
-        ]);
-*/
+        /*
+                $this->addBehavior('CounterCache', [
+                    'PurchaseRequest' => ['nmcl_count', [
+                        'conditions' => ['Files.flag' => 'on']
+                    ]]
+                ]);
+        */
 
         $this->belongsTo('PurchaseRequest', [
-            'foreignKey' => 'request_id'	        
+            'foreignKey' => 'request_id'
         ]);
 
         $this->belongsTo('Units', [
-            'className' => 'Units'      
+            'className' => 'Units'
         ]);
 
         $this->belongsTo('Managers', [
             'foreignKey' => 'manager_id',
             'className' => 'Posts',
             'propertyName' => 'manager'
-        ]); 
+        ]);
 
         $this->belongsTo('Statuses', [
             'foreignKey' => 'status_id',
             'propertyName' => 'status',
             'className' => 'Statuses',
-        ]); 
+        ]);
 
         $this->belongsTo('Addresses', [
             'foreignKey' => 'transport_company_address_id',
@@ -46,284 +47,367 @@ class PurchaseNomenclaturesTable extends Table
             'foreignKey' => 'bill_id',
         ]);
 
-        $this->hasMany('CustomTypes');
-        
-        $this->belongsToMany('Purchases', [
-	        'foreignKey' => 'nomenclature_id',
-	        'joinTable' => 'nomenclatures_purchases'
+        $this->belongsTo('Objects', [
+            //'foreignKey' => 'bill_id',
         ]);
-        
+
+        $this->hasMany('CustomTypes');
+
+        $this->belongsToMany('Purchases', [
+            'foreignKey' => 'nomenclature_id',
+            'joinTable' => 'nomenclatures_purchases'
+        ]);
+
         $this->hasMany('Files', [
             'foreignKey' => 'record_id',
             'className' => 'Files',
-            'conditions' => [ 'model_alias' => 'PurchaseNomenclatures', 'flag' => 'on' ]
+            'conditions' => ['model_alias' => 'PurchaseNomenclatures', 'flag' => 'on']
         ]);
     }
 
     public $check_list = [
-	    'name' => [ 'rules' => [ 'notEmpty' ] ]      
+        'name' => ['rules' => ['notEmpty']]
     ];
 
     public $contain_map = [
         'request_id' => [
             'pattern' => '<u><a href="/purchaseRequest/view/{{request_id}}">{{request_id}}</a></u>',
             'index' => [
-	            'width' => '90px',
-	            'show' => 1
+                'width' => '90px',
+                'display' => true
+            ],
+            'filter' => [
+                'elementType' => 'input',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => '=',
+                'operator_logical' => 'OR'
             ]
-	    ],
-	    'id' => [
+        ],
+        'id' => [
             'pattern' => '{{id}}',
             'index' => [
-	            'width' => '65px',
-	            'show' => 1
+                'width' => '65px',
+                'display' => true
             ]
-	    ],
-	    'name' => [
+        ],
+        'name' => [
             'pattern' => '<span class="cell-info"><span class="cell-item_title">{{name}}</span> <span class="cell-item_describe">{{text}}</span></span>',
             'index' => [
-	            'width' => '350px',
-	            'show' => 1
+                'width' => '350px',
+                'display' => true
+            ],
+            'filter' => [
+                'elementType' => 'input',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => 'LIKE',
+                'operator_logical' => 'OR'
             ]
-	    ],
-	    'quantity' => [
+        ],
+        'quantity' => [
             'pattern' => '{{quantity}} {{unit_name}}',
             'index' => [
-	            'width' => '70px',
-	            'show' => 1
+                'width' => '70px',
+                'display' => true
             ]
-	    ],
+        ],
         'date_purchase' => [
             'pattern' => '{% if date_purchase %}{{date_purchase}}{% endif %}',
             'index' => [
                 'width' => '140px',
-                'show' => 1
+                'display' => true
             ],
             'db_params' => [
                 'comment' => 'Дата поставки'
             ]
         ],
-	    'status_id' => [
-	        'leftJoin' => 'Statuses',
+        'object_id' => [
+            'leftJoin' => 'Objects',
+            'pattern' => '{{object.name}}',
+            'index' => [
+                'width' => '150px',
+                'show' => 0
+            ],
+            'filter' => [
+                'elementType' => 'select',
+                'label' => 'Обьект',
+                'modelName' => 'Departments',
+                'url' => '/departments/getAjaxList/',
+                'hide' => 0,
+                'default_value' => null,
+                'show' => 1,
+                'display' => true,
+                'operator' => '=',
+                'operator_logical' => 'AND',
+                'output_type' => 'select',
+                'uri' => [
+                    'where' => [
+                        'AND' => [
+                            'label' => 'object'
+                        ]
+                    ]
+                ]
+            ]
+        ],
+        'status_id' => [
+            'leftJoin' => 'Statuses',
             'pattern' => '{{status.name}}',
-	        'filter' => [
-		        'modelName' => 'Statuses',
-	            'url' => '/statuses/getAjaxList/',
-                'uri' => ['model_alias' => 'App.PurchaseNomenclatures'],
-				'hide' => 0,
-				'default_value' => null,
-				'show' => 1,
-				'operator' => '=',
-				'output_type' => 'select',
-				'operator_logical' => 'AND'	            
-	        ],
+            'filter' => [
+                'elementType' => 'select',
+                'label' => 'Статус',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => '=',
+                'operator_logical' => 'AND',
+                'url' => '/statuses/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'AND' => [
+                            'model_alias' => 'App.PurchaseNomenclatures'
+                        ]
+                    ]
+                ]
+            ],
             'index' => [
                 'width' => '160px',
-                'show' => 1
+                'display' => true
             ]
-	    ],
-	    'manager_id' => [
+        ],
+        'manager_id' => [
             'leftJoin' => 'Managers',
             'pattern' => '<span class="post-info"><span class="post-fio">{{manager.fio}}</span> <span class="post-name">{{manager.name}}</span></span>',
             'index' => [
-	            'width' => '211px',
-	            'show' => 1
+                'width' => '211px',
+                'display' => true
             ],
-	        'filter' => [
-	    	    'modelAlias' => 'Managers',
-	            'url' => '/posts/getAjaxList/',
-	            'uri' => '{
-		            where : {OR : [{"name LIKE" : "%{{value}}%"}, {"fio LIKE" : "%{{value}}%"}]},
-		            pattern : "{{fio}} - {{name}}" 
-	            }',
-				'hide' => 0,
-				'default_value' => null,
-				'show' => 1,
-				'operator' => '=',
-				'output_type' => 'select',
-				'operator_logical' => 'AND'
-	        ]
-	    ],
-	    'text' => [
-            'index' => [
-	            'show' => 0
+            'filter' => [
+                'elementType' => 'select',
+                'hidden' => true,
+                'label' => 'Ответственный',
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => '=',
+                'operator_logical' => 'AND',
+                'url' => '/api-users/getAjaxList/',
+                'uri' => [
+                    'where' => [
+                        'OR' => [
+                            'name LIKE' => '%{{value}}%',
+                            'post_name LIKE' => '%{{value}}%'
+                        ]
+                    ],
+                    'pattern' => '{{name}} - {{post_name}}'
+                ]
             ]
-	    ],
-	     'unit_name' => [
+        ],
+        'text' => [
             'index' => [
-	            'show' => 0
+                'display' => false
+            ],
+            'filter' => [
+                'elementType' => 'input',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => 'LIKE',
+                'operator_logical' => 'OR'
             ]
-	    ],
-	    'bill_id' => [
-		    'leftJoin' => 'Bills',
+        ],
+        'unit_name' => [
+            'index' => [
+                'display' => false
+            ]
+        ],
+        'bill_id' => [
+            'leftJoin' => 'Bills',
             'pattern' => '<u><a href="/store/bills/view/{{bill_id}}/">{{bill.number}}</a></u>',
             'index' => [
-	            'width' => '65px',
-	            'show' => 1
+                'width' => '65px',
+                'display' => true
             ]
-	    ],
-	    'purchase_id' => [
+        ],
+        'purchase_id' => [
             'pattern' => '<u><a href="/purchases/view/{{purchase_id}}/">{{purchase_id}}</a></u>',
             'index' => [
-	            'width' => '45px',
-	            'show' => 1
+                'width' => '45px',
+                'display' => true
             ]
-	    ], 
-	    'custom_specification' => [
+        ],
+        'custom_specification' => [
             'pattern' => '{{custom_specification}}',
             'index' => [
-	            'width' => '160px',
-	            'show' => 1
+                'width' => '160px',
+                'display' => true
+            ],
+            'filter' => [
+                'elementType' => 'input',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => 'LIKE',
+                'operator_logical' => 'OR'
             ]
-	    ],
-	    'custom_otdel_zakupok' => [
+        ],
+        'custom_otdel_zakupok' => [
             'pattern' => '{{custom_otdel_zakupok}}',
             'index' => [
-	            'width' => '150px',
-	            'show' => 1
+                'width' => '150px',
+                'display' => true
             ]
-	    ],
-	    'date_shipment_schedule' => [
+        ],
+        'date_shipment_schedule' => [
             'pattern' => '{{date_shipment_schedule_format}}',
             'index' => [
-	            'width' => '170px',
-	            'show' => 1
+                'width' => '170px',
+                'display' => true
             ]
-	    ],
-	    'transport_company_address_id' => [
-	        'leftJoin' => ['Addresses' => ['Contractors']],
+        ],
+        'transport_company_address_id' => [
+            'leftJoin' => ['Addresses' => ['Contractors']],
             'pattern' => '<span class="cell-info"><span class="cell-item_title">{{address.contractor.name1}}<span class="cell-item_describe">{{address.full_address}}</span> </span></span> {{purchase_type}}',
             'index' => [
-	            'width' => '170px',
-	            'show' => 1
+                'width' => '170px',
+                'display' => true
             ]
-	    ],
-	    'date_shipment_fact' => [
+        ],
+        'date_shipment_fact' => [
             'pattern' => '{{date_shipment_fact_format}}',
             'index' => [
-	            'width' => '170px',
-	            'show' => 1
+                'width' => '170px',
+                'display' => true
             ]
-	    ],
-	    'shipment_number' => [
+        ],
+        'shipment_number' => [
             'pattern' => '{{shipment_number}}',
             'index' => [
-	            'width' => '170px',
-	            'show' => 1
+                'width' => '170px',
+                'display' => true
+            ],
+            'filter' => [
+                'elementType' => 'input',
+                'hidden' => true,
+                'defaultValue' => null,
+                'display' => true,
+                'operator' => 'LIKE',
+                'operator_logical' => 'OR'
             ]
-	    ],
+        ],
         'date_to' => [
             'pattern' => '{% if date_to %}{{date_to}}{% endif %}',
             'index' => [
                 'width' => '180px',
-                'show' => 1
+                'display' => true
             ],
             'db_params' => [
                 'comment' => 'Дата поставки (инициатор)'
             ]
         ],
 
-	    'brand_id' => [
+        'brand_id' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'contractor_id' => [
+        ],
+        'contractor_id' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'id_out' => [
+        ],
+        'id_out' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'custom_type_id' => [
+        ],
+        'custom_type_id' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'files_count' => [
+        ],
+        'files_count' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'stock' => [
+        ],
+        'stock' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'price' => [
+        ],
+        'price' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'unit_quantity' => [
+        ],
+        'unit_quantity' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'kind' => [
+        ],
+        'kind' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'name_analog' => [
+        ],
+        'name_analog' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'barcode' => [
+        ],
+        'barcode' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'article' => [
+        ],
+        'article' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'flag' => [
+        ],
+        'flag' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ],
-	    'transport_company_id' => [
+        ],
+        'transport_company_id' => [
             'index' => [
-	            'show' => 0
+                'display' => false
             ]
-	    ]
+        ]
     ];
 
-	public $links = [
-	    'drop_panel' => [
-		    [
-			    'title' => 'Просмотр',
-			    'href' => '/purchaseNomenclatures/view/{{record.id}}/',
-			    'class' => 'drop-button__hide-blok__link',
-			    'check' => false
-		    ]		    
-	    ],
-	    'checkbox_panel' => [
-		    'selects' => [ 
-		        [			    
+    public $links = [
+        'drop_panel' => [
+            [
+                'title' => 'Просмотр',
+                'href' => '/purchaseNomenclatures/view/{{record.id}}/',
+                'class' => 'drop-button__hide-blok__link',
+                'check' => false
+            ]
+        ],
+        'checkbox_panel' => [
+            'selects' => [
+                [
                     'id' => 'checkboxPanelSelectPN',
                     'name' => 'parent_id',
                     'data-params' => '{"readonly":true}',
                     'on-events' => '{"change":"PurchaseNomenclatures|handleIndex"}',
                     'label' => 'Действия с выделенным',
                     'options' => [
-	                    '/purchaseNomenclatures/setPurchaseParams/' => 'Указать данные поставки'
+                        '/purchaseNomenclatures/setPurchaseParams/' => 'Указать данные поставки'
                     ],
                     'class' => 'on-select__finder list-listener',
                     'escape' => false,
                     'empty' => 'Не выбрано',
                     'type' => 'select'
-		        ]
-		    ]
-		    
-	    ]
-	];
+                ]
+            ]
+
+        ]
+    ];
 
 
 }
